@@ -1,6 +1,6 @@
 import { Injectable, NestMiddleware, UnauthorizedException } from "@nestjs/common";
 import { JsonWebTokenError, JwtService } from "@nestjs/jwt";
-import { NextFunction, Request } from "express";
+import { NextFunction, Request, Response } from "express";
 
 @Injectable()
 export class AdminMiddleware implements NestMiddleware {

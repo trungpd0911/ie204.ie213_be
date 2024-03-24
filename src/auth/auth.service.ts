@@ -7,7 +7,6 @@ import { RegisterUserDto } from './dto/registerUser.dto';
 import * as bcrypt from 'bcrypt';
 import { responseData } from 'src/global/globalClass';
 import { JwtService } from '@nestjs/jwt';
-const saltRounds = 10;
 
 @Injectable()
 export class AuthService {
@@ -16,6 +15,14 @@ export class AuthService {
         private jwtService: JwtService,
     ) { }
 
+    private async hashPassword(password: string): Promise<string> {
+        const saltRounds = 10;
+        const salt = await bcrypt.genSalt(saltRounds);
+        const hash = await bcrypt.hash(password, salt);
+
+        return hash;
+    }
+
     async register(registerUser: RegisterUserDto) {
         try {
             const { email, password, username } = registerUser;
@@ -23,7 +30,7 @@ export class AuthService {
             if (checkUserExist) {
                 throw new HttpException('User already exist', 400);
             }
-            const hash = await bcrypt.hash(password, saltRounds);
+            const hash = await this.hashPassword(password);
             const newUser = new this.userModel({ email, password: hash, username });
             await newUser.save();
             return new responseData(null, 200, "User created successfully");

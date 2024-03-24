@@ -3,6 +3,7 @@ import { LoginUserDto } from './dto/loginUser.dto';
 import { AuthService } from './auth.service';
 import { RegisterUserDto } from './dto/registerUser.dto';
 import { JwtAuthGuard } from './guards/jwt.guards';
+import { Request } from 'express';
 
 @Controller('auth')
 export class AuthController {
@@ -17,7 +18,7 @@ export class AuthController {
 
     @Post('/login')
     // @UseGuards(LocalGuard)
-    async login(@Body() loginUser: LoginUserDto) {
+    async login(@Req() req: Request, @Body() loginUser: LoginUserDto) {
         return this.authService.login(loginUser);
     }
 
@@ -25,9 +26,7 @@ export class AuthController {
     @Get('status')
     @UseGuards(JwtAuthGuard)
     status(@Req() req: Request) {
-        console.log(req.user);
         return req.user;
-        // return req.user;
     }
 
 
