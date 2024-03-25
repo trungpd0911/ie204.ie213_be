@@ -20,9 +20,9 @@ async function bootstrap() {
 
 	// cors 
 	app.enableCors();
+	// start server
 	await app.listen(process.env.port || 3000);
-
-	// Hot Module Replacement 
+	// Hot Module Replacement => reload automatically when change code
 	if (module.hot) {
 		module.hot.accept();
 		module.hot.dispose(() => app.close());

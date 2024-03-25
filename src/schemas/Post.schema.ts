@@ -4,7 +4,7 @@ import { User } from "./User.schema";
 
 @Schema({ timestamps: true })
 export class Post {
-    @Prop({ required: true, type: String })
+    @Prop({ required: true, type: String, unique: true })
     title: string;
 
     @Prop({ required: true, type: String })

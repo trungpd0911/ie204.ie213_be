@@ -1,7 +1,5 @@
-import { Injectable } from '@nestjs/common';
 import slugify from 'slugify';
 
-@Injectable()
 export class configSlug {
     constructor() { }
     static convertToSlug(title: string): string {

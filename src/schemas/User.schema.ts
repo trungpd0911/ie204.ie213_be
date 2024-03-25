@@ -2,6 +2,7 @@ import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import mongoose from "mongoose";
 import { Table } from "./Table.schema";
 import { TableBooking } from "./TableBooking.schema";
+import { Exclude } from "class-transformer";
 
 @Schema({ timestamps: true })
 export class User {
@@ -23,8 +24,8 @@ export class User {
     @Prop({})
     phone_number: string;
 
-    @Prop({ default: false })
-    isAdmin: boolean;
+    @Prop({ default: "user" })
+    role: string;
 
     @Prop({
         type: [{ type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'TableBooking' }] }]

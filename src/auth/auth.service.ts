@@ -23,6 +23,15 @@ export class AuthService {
         return hash;
     }
 
+    private async generateToken(payload: any): Promise<string> {
+        const accessToken = await this.jwtService.signAsync(payload);
+        // const refreshToken = await this.jwtService.sign(payload, {
+        //     secret: JWT_REFRESH_TOKEN_SECRET,
+        //     expiresIn: '7d'
+        // });
+        return accessToken;
+    }
+
     async register(registerUser: RegisterUserDto) {
         try {
             const { email, password, username } = registerUser;
@@ -56,7 +65,7 @@ export class AuthService {
                 throw new UnauthorizedException('wrong email or password');
             }
             const { password, ...user } = checkUser.toObject();
-            const token = this.jwtService.sign(user);
+            const token = await this.generateToken(user);
             return new responseData({ token }, 200, "Login successfully");
         } catch (error) {
             if (error instanceof HttpException) {
