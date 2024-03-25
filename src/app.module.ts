@@ -1,27 +1,41 @@
-import { MiddlewareConsumer, Module, NestModule, RequestMethod } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { PostsModule } from './posts/posts.module';
-import { ConfigModule } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
-import { AdminMiddleware } from './middlewares/authMiddleware';
+import { JwtModule, JwtModuleOptions } from '@nestjs/jwt';
 
 @Module({
 	imports: [
 		ConfigModule.forRoot({
+			isGlobal: true,
 			envFilePath: '.env',
 		}),
-		MongooseModule.forRoot(process.env.DB_URL),
+		MongooseModule.forRootAsync({
+			imports: [ConfigModule],
+			inject: [ConfigService],
+			useFactory: async (configService: ConfigService) => ({
+				uri: configService.get<string>('DB_URL')
+			}),
+		}),
+		JwtModule.registerAsync({
+			global: true,
+			imports: [ConfigModule],
+			inject: [ConfigService],
+			useFactory: async (configService: ConfigService): Promise<JwtModuleOptions> => ({
+				secret: configService.get<string>('JWT_SECRET'),
+				signOptions: {
+					expiresIn: configService.get<string>('JWT_EXPIRES_IN'),
+				},
+			}),
+		}),
 		AuthModule,
 		UsersModule,
 		PostsModule],
 	controllers: [],
 	providers: [],
 })
-export class AppModule implements NestModule {
-	configure(consumer: MiddlewareConsumer) {
-		consumer
-			.apply(AdminMiddleware)
-			.forRoutes({ path: 'posts', method: RequestMethod.GET });
-	}
+export class AppModule {
+
 }

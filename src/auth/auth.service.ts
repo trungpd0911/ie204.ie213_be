@@ -7,7 +7,6 @@ import { RegisterUserDto } from './dto/registerUser.dto';
 import * as bcrypt from 'bcrypt';
 import { responseData } from 'src/global/globalClass';
 import { JwtService } from '@nestjs/jwt';
-const saltRounds = 10;
 
 @Injectable()
 export class AuthService {
@@ -16,6 +15,23 @@ export class AuthService {
         private jwtService: JwtService,
     ) { }
 
+    private async hashPassword(password: string): Promise<string> {
+        const saltRounds = 10;
+        const salt = await bcrypt.genSalt(saltRounds);
+        const hash = await bcrypt.hash(password, salt);
+
+        return hash;
+    }
+
+    private async generateToken(payload: any): Promise<string> {
+        const accessToken = await this.jwtService.signAsync(payload);
+        // const refreshToken = await this.jwtService.sign(payload, {
+        //     secret: JWT_REFRESH_TOKEN_SECRET,
+        //     expiresIn: '7d'
+        // });
+        return accessToken;
+    }
+
     async register(registerUser: RegisterUserDto) {
         try {
             const { email, password, username } = registerUser;
@@ -23,7 +39,7 @@ export class AuthService {
             if (checkUserExist) {
                 throw new HttpException('User already exist', 400);
             }
-            const hash = await bcrypt.hash(password, saltRounds);
+            const hash = await this.hashPassword(password);
             const newUser = new this.userModel({ email, password: hash, username });
             await newUser.save();
             return new responseData(null, 200, "User created successfully");
@@ -49,7 +65,7 @@ export class AuthService {
                 throw new UnauthorizedException('wrong email or password');
             }
             const { password, ...user } = checkUser.toObject();
-            const token = this.jwtService.sign(user);
+            const token = await this.generateToken(user);
             return new responseData({ token }, 200, "Login successfully");
         } catch (error) {
             if (error instanceof HttpException) {
