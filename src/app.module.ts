@@ -5,6 +5,7 @@ import { PostsModule } from './posts/posts.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
 import { JwtModule, JwtModuleOptions } from '@nestjs/jwt';
+import { BillModule } from './bill/bill.module';
 
 @Module({
 	imports: [
@@ -35,6 +36,7 @@ import { JwtModule, JwtModuleOptions } from '@nestjs/jwt';
 		AuthModule,
 		UsersModule,
 		PostsModule,
+		BillModule,
 	],
 	controllers: [],
 	providers: [],

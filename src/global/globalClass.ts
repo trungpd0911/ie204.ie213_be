@@ -12,3 +12,15 @@ export class responseData<D> {
 		return this;
 	}
 }
+
+export class responseError {
+	statusCode: number;
+	message: string;
+
+	constructor(statusCode: number, message: string) {
+		this.statusCode = statusCode;
+		this.message = message;
+
+		return this;
+	}
+}

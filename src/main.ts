@@ -14,6 +14,10 @@ async function bootstrap() {
 		.setTitle('Swagger bếp UIT')
 		.setDescription('API documentation for bếp UIT')
 		.setVersion('1.0')
+		.addTag('auth')
+		.addTag('users')
+		.addTag('posts')
+		.addBearerAuth()
 		.build();
 	const document = SwaggerModule.createDocument(app, config);
 	SwaggerModule.setup('api', app, document);
