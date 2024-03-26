@@ -1,14 +1,18 @@
 import { Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { PostsModule } from './posts/posts.module';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigModule, ConfigService } from '@nestjs/config';
 import { MongooseModule } from '@nestjs/mongoose';
+import { JwtModule, JwtModuleOptions } from '@nestjs/jwt';
 import { JwtModule, JwtModuleOptions } from '@nestjs/jwt';
 
 @Module({
 	imports: [
 		ConfigModule.forRoot({
+			isGlobal: true,
 			isGlobal: true,
 			envFilePath: '.env',
 		}),

@@ -54,5 +54,4 @@ export class User {
 		used: boolean;
 	}[];
 }
-
 export const UserSchema = SchemaFactory.createForClass(User);
