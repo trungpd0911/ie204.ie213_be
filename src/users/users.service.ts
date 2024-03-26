@@ -1,24 +1,26 @@
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { responseData } from 'src/global/globalClass';
 import { User } from 'src/schemas/User.schema';
 
 @Injectable()
 export class UsersService {
-    constructor(
-        @InjectModel(User.name) private userModel: Model<User>,
-    ) {
-    }
+	constructor(@InjectModel(User.name) private userModel: Model<User>) {}
 
-    async getAllUsers() {
-        const users = await this.userModel.find();
-        return users;
-    }
+	async getAllUsers() {
+		try {
+			const users = await this.userModel.find().select('-password -role');
+			return new responseData(users, 200, 'get all users successfully');
+		} catch (error) {
+			throw new Error(error);
+		}
+	}
 
-    async findByEmail(email: string) {
-        const user = await this.userModel.findOne({
-            email: email
-        });
-        return user;
-    }
+	async findByEmail(email: string) {
+		const user = await this.userModel.findOne({
+			email: email,
+		});
+		return user;
+	}
 }

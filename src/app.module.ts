@@ -16,14 +16,16 @@ import { JwtModule, JwtModuleOptions } from '@nestjs/jwt';
 			imports: [ConfigModule],
 			inject: [ConfigService],
 			useFactory: async (configService: ConfigService) => ({
-				uri: configService.get<string>('DB_URL')
+				uri: configService.get<string>('DB_URL'),
 			}),
 		}),
 		JwtModule.registerAsync({
 			global: true,
 			imports: [ConfigModule],
 			inject: [ConfigService],
-			useFactory: async (configService: ConfigService): Promise<JwtModuleOptions> => ({
+			useFactory: async (
+				configService: ConfigService,
+			): Promise<JwtModuleOptions> => ({
 				secret: configService.get<string>('JWT_SECRET'),
 				signOptions: {
 					expiresIn: configService.get<string>('JWT_EXPIRES_IN'),
@@ -32,10 +34,9 @@ import { JwtModule, JwtModuleOptions } from '@nestjs/jwt';
 		}),
 		AuthModule,
 		UsersModule,
-		PostsModule],
+		PostsModule,
+	],
 	controllers: [],
 	providers: [],
 })
-export class AppModule {
-
-}
+export class AppModule { }

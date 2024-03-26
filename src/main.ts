@@ -9,7 +9,7 @@ async function bootstrap() {
 	// validation pipe for all routes
 	app.useGlobalPipes(new ValidationPipe());
 
-	// swagger setup 
+	// swagger setup
 	const config = new DocumentBuilder()
 		.setTitle('Swagger bếp UIT')
 		.setDescription('API documentation for bếp UIT')
@@ -18,7 +18,7 @@ async function bootstrap() {
 	const document = SwaggerModule.createDocument(app, config);
 	SwaggerModule.setup('api', app, document);
 
-	// cors 
+	// cors
 	app.enableCors();
 	// start server
 	await app.listen(process.env.port || 3000);
