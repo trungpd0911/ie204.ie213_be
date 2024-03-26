@@ -3,15 +3,12 @@ import {
 	Controller,
 	Get,
 	Param,
-	ParseIntPipe,
-	ParseUUIDPipe,
 	Post,
 	Req,
 	UseGuards,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
 import { CreatePostDto } from './dto/createPost.dto';
-import { AuthGuard } from 'src/guards/auth.guard';
 import { AuthGuard } from 'src/guards/auth.guard';
 
 @Controller('posts')
