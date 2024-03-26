@@ -6,17 +6,15 @@ import { Request } from 'express';
 
 @Controller('auth')
 export class AuthController {
-    constructor(
-        private authService: AuthService,
-    ) { }
+	constructor(private authService: AuthService) {}
 
-    @Post('/register')
-    async register(@Body() registerUser: RegisterUserDto) {
-        return this.authService.register(registerUser);
-    }
+	@Post('/register')
+	async register(@Body() registerUser: RegisterUserDto) {
+		return this.authService.register(registerUser);
+	}
 
-    @Post('/login')
-    async login(@Body() loginUser: LoginUserDto) {
-        return this.authService.login(loginUser);
-    }
+	@Post('/login')
+	async login(@Body() loginUser: LoginUserDto) {
+		return this.authService.login(loginUser);
+	}
 }
