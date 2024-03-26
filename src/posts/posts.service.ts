@@ -1,10 +1,10 @@
 import { HttpException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
-import { Post } from 'src/schemas/Post.schema';
+import { Model, Types } from 'mongoose';
+import { Post } from '../schemas/Post.schema';
 import { CreatePostDto } from './dto/createPost.dto';
-import { configSlug } from 'src/helper/slug.helper';
-import { responseData } from 'src/global/globalClass';
+import { configSlug } from '../helper/slug.helper';
+import { responseData } from '../global/globalClass';
 
 @Injectable()
 export class PostsService {
@@ -14,7 +14,7 @@ export class PostsService {
 		try {
 			const allPost = await this.postModel
 				.find()
-				.populate('authorId', 'username');
+			// .populate('authorId', 'username');
 			return new responseData(allPost, 200, 'Get all post successfully');
 		} catch (error) {
 			throw error;
@@ -23,9 +23,12 @@ export class PostsService {
 
 	async getPostById(id: string) {
 		try {
+			if (!Types.ObjectId.isValid(id)) {
+				throw new HttpException('Invalid id', 400);
+			}
 			const post = await this.postModel
 				.findById(id)
-				.populate('authorId', 'username');
+			// .populate('authorId', 'username');
 			if (!post) {
 				throw new HttpException('Post not found', 404);
 			}
@@ -50,7 +53,7 @@ export class PostsService {
 				authorId: userId,
 			});
 			await newPost.save();
-			return new responseData(null, 200, 'Post created successfully');
+			return new responseData(null, 201, 'Post created successfully');
 		} catch (error) {
 			throw error;
 		}

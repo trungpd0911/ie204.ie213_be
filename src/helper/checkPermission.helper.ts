@@ -1,5 +1,4 @@
 import { BadRequestException } from '@nestjs/common';
-import { User } from 'src/schemas/User.schema';
 
 export class Permission {
 	static checkPermission(paramId: string, currentId: string, role: string) {

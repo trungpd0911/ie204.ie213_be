@@ -2,17 +2,57 @@ import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
 import { LoginUserDto } from './dto/loginUser.dto';
 import { AuthService } from './auth.service';
 import { RegisterUserDto } from './dto/registerUser.dto';
-import { Request } from 'express';
+import { ApiBadGatewayResponse, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { responseData, responseError } from 'src/global/globalClass';
 
+@ApiTags('auth')
 @Controller('auth')
 export class AuthController {
 	constructor(private authService: AuthService) { }
 
+	@ApiResponse({
+		status: 201, description: 'User registered successfully', schema: {
+			example: new responseData(null, 201, 'User registered successfully'),
+		}
+	})
+	@ApiResponse({
+		status: 400, description: 'User already exist', schema: {
+			example: new responseError(400, 'User already exist'),
+		}
+	})
+	@ApiResponse({
+		status: 500, description: 'Internal server error', schema: {
+			example: new responseError(500, 'Internal server error'),
+		}
+	})
+	@ApiResponse({
+		description: 'Bad request because of the input', schema: {
+			example: new responseData(null, 400, 'password must be longer than or equal to 8 characters'),
+		}
+	})
 	@Post('/register')
 	async register(@Body() registerUser: RegisterUserDto) {
 		return this.authService.register(registerUser);
 	}
 
+	@ApiResponse({
+		status: 200, description: 'Login successfully', schema: {
+			example: new responseData({
+				accessToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NjAyMmYxMWY5NmRiYWQwODAyYTRlYzEiLCJ1c2VybmFtZSI6ImFkbWluIiwiZW1haWwiOiJhZG1pbkBnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsInRhYmxlcyI6W10sImNyZWF0ZWRBdCI6IjIwMjQtMDMtMjZUMDI6MTI6MzMuMzU4WiIsInVwZGF0ZWRBdCI6IjIwMjQtMDMtMjZUMDI6MTI6MzMuMzU4WiIsIl9fdiI6MCwiZGlzY291bnRzIjpbXSwiaWF0IjoxNzExNDY2NjA5LCJleHAiOjE3MTE1NTMwMDl9.JGRUFo-7029Q3xZIX92w2F4zTmLaOpATFB1Fjr5IfuA",
+				refreshToken: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI2NjAyMmYxMWY5NmRiYWQwODAyYTRlYzEiLCJ1c2VybmFtZSI6ImFkbWluIiwiZW1haWwiOiJhZG1pbkBnbWFpbC5jb20iLCJyb2xlIjoidXNlciIsInRhYmxlcyI6W10sImNyZWF0ZWRBdCI6IjIwMjQtMDMtMjZUMDI6MTI6MzMuMzU4WiIsInVwZGF0ZWRBdCI6IjIwMjQtMDMtMjZUMDI6MTI6MzMuMzU4WiIsIl9fdiI6MCwiZGlzY291bnRzIjpbXSwiaWF0IjoxNzExNDY2OTM0LCJleHAiOjE3MTIwNzE3MzR9.x1P9XIl8cXcdFiXbcH6wKx7eIrrUH6J_IuZERB0Ffaa"
+			}, 200, 'Login successfully'),
+		}
+	})
+	@ApiResponse({
+		status: 400, description: 'wrong email or password', schema: {
+			example: new responseError(400, 'wrong email or password'),
+		}
+	})
+	@ApiResponse({
+		status: 500, description: 'Internal server error', schema: {
+			example: new responseError(500, 'Internal server error'),
+		}
+	})
 	@Post('/login')
 	async login(@Body() loginUser: LoginUserDto) {
 		return this.authService.login(loginUser);
