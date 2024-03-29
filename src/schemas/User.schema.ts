@@ -38,8 +38,13 @@ export class User {
 		bookingTime: Date;
 	}[];
 
-	@Prop({ required: false, type: { link: String, id: String } })
-	avatar: { link: string; id: string };
+	@Prop({
+		type: { link: String, publicId: String }, default: {
+			link: "https://res.cloudinary.com/dsygiu1h0/image/upload/v1711611594/default-avatar.webp",
+			publicId: "",
+		}
+	})
+	avatar: { link: string; publicId: string };
 
 	@Prop({
 		required: false, type: [
