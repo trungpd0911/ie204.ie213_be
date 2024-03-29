@@ -19,7 +19,13 @@ export class CreatePostDto {
 	@MaxLength(160)
 	description: string;
 
-	@ApiProperty({ example: 'keywords[]' })
+	@ApiProperty({
+		example: [
+			'keyword1',
+			'keyword2',
+			'keyword3',
+		]
+	})
 	@IsNotEmpty()
 	@IsString({ each: true })
 	keywords: string[];

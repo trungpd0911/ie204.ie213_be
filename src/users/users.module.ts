@@ -1,11 +1,14 @@
-import { Module } from '@nestjs/common';
+import { Global, Module } from '@nestjs/common';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from '../schemas/User.schema';
+import { CloudinaryModule } from 'src/cloudinary/cloudinary.module';
 
+@Global()
 @Module({
 	imports: [
+		CloudinaryModule,
 		MongooseModule.forFeature([
 			{
 				name: User.name,
@@ -15,5 +18,6 @@ import { User, UserSchema } from '../schemas/User.schema';
 	],
 	controllers: [UsersController],
 	providers: [UsersService],
+	exports: [UsersService],
 })
 export class UsersModule { }

@@ -93,4 +93,35 @@ export class AuthService {
 			throw new HttpException('Internal server error', 500);
 		}
 	}
+
+	async adminLogin(loginUser: LoginUserDto) {
+		try {
+			const checkUser = await this.userModel.findOne({
+				email: loginUser.email,
+			});
+			if (!checkUser) {
+				throw new UnauthorizedException('wrong email or password');
+			}
+			const checkPassword = bcrypt.compareSync(
+				loginUser.password,
+				checkUser.password,
+			);
+			if (!checkPassword) {
+				throw new UnauthorizedException('wrong email or password');
+			}
+			if (checkUser.role !== 'admin') {
+				throw new HttpException("you don't have permission", 403);
+			}
+			const { password, ...user } = checkUser.toObject();
+			const accessToken = await this.generateAccessToken(user);
+			const refreshToken = await this.generateRefreshToken(user);
+			return new responseData({ accessToken, refreshToken }, 200, 'Login successfully');
+		} catch (error) {
+			if (error instanceof HttpException) {
+				throw error;
+			}
+			console.log(error);
+			throw new HttpException('Internal server error', 500);
+		}
+	}
 }
