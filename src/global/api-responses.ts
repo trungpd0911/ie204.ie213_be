@@ -1,5 +1,5 @@
 import { ApiResponse } from "@nestjs/swagger";
-import { responseError } from "src/global/globalClass";
+import { responseError } from "../global/globalClass";
 
 export const tokenErrorResponse = ApiResponse({
     status: 401, description: 'Invalid token or expired', schema: {

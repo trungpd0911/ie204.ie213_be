@@ -58,4 +58,12 @@ export class PostsService {
 			throw error;
 		}
 	}
+
+	async uploadImages(cloudImages: object, blogId: string) {
+		try {
+		} catch (error) {
+			throw error;
+		}
+
+	}
 }
