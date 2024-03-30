@@ -4,7 +4,7 @@ import { Model, Types } from 'mongoose';
 import { responseData } from '../global/globalClass';
 import { User } from '../schemas/User.schema';
 import { updateUserDto } from './dto/updateUser.dto';
-import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
+import { CloudinaryService } from '../cloudinary/cloudinary.service';
 
 @Injectable()
 export class UsersService {
@@ -46,12 +46,14 @@ export class UsersService {
 		}
 	}
 
-	async updateUser(id: string, updateUserDto: updateUserDto) {
+	async updateUser(userId, id: string, updateUserDto: updateUserDto) {
 		try {
 			if (!Types.ObjectId.isValid(id)) {
 				return new HttpException('Invalid id', 400);
 			}
-
+			if (userId != id) {
+				return new HttpException('Permission denied', 403);
+			}
 			const user = await this.userModel.findById(id);
 			if (!user) {
 				return new HttpException('User not found', 404);
