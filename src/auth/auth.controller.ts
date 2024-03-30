@@ -3,8 +3,8 @@ import { LoginUserDto } from './dto/loginUser.dto';
 import { AuthService } from './auth.service';
 import { RegisterUserDto } from './dto/registerUser.dto';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
-import { responseData, responseError } from '../global/globalClass';
-import { serverErrorResponse } from '../global/api-responses';
+import { responseData, responseError } from 'src/global/globalClass';
+import { serverErrorResponse } from 'src/global/api-responses';
 
 @ApiTags('auth')
 @serverErrorResponse

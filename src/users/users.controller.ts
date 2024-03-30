@@ -1,14 +1,14 @@
-import { Body, Controller, Get, Param, Post, Put, Req, Request, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
+import { Body, Controller, Get, Param, Post, Put, Request, UploadedFile, UseGuards, UseInterceptors } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { RoleGuard } from '../guards/role.guard';
 import { AuthGuard } from '../guards/auth.guard';
 import { ApiBearerAuth, ApiBody, ApiConsumes, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { currentUser } from './decorators/currentUser.decorator';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { CloudinaryService } from '../cloudinary/cloudinary.service';
-import { responseData, responseError } from '../global/globalClass';
+import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
+import { responseData, responseError } from 'src/global/globalClass';
 import { updateUserDto } from './dto/updateUser.dto';
-import { invalidIdResponse, permissionErrorResponse, serverErrorResponse, tokenErrorResponse } from '../global/api-responses';
+import { invalidIdResponse, permissionErrorResponse, serverErrorResponse, tokenErrorResponse } from 'src/global/api-responses';
 
 // swagger
 @ApiBearerAuth()
@@ -86,23 +86,23 @@ export class UsersController {
 
 	@invalidIdResponse
 	@tokenErrorResponse
-	@permissionErrorResponse
 	@ApiResponse({ status: 404, description: "User not found", schema: { example: new responseError(404, "User not found") } })
 	@ApiResponse({ status: 200, description: "update user successfully", schema: { example: new responseData(null, 200, 'update user successfully') } })
 	@Put(':id')
 	@UseGuards(AuthGuard)
+	@UseInterceptors(FileInterceptor('avatar'))
 	async updateUser(
-		@Request() req,
 		@Param('id') id: string,
 		@Body() updateUserDto: updateUserDto
 	) {
-		const userId = req.currentUser._id;
-		return this.userService.updateUser(userId, id, updateUserDto);
+		return this.userService.updateUser(id, updateUserDto);
 	}
 
 	@tokenErrorResponse
 	@ApiResponse({ status: 200, description: "change avatar successfully", schema: { example: new responseData(null, 200, 'change avatar successfully') } })
 	@ApiResponse({ status: 404, description: "User not found", schema: { example: new responseError(404, "User not found") } })
+	@Post('/change-avatar')
+	@UseGuards(AuthGuard)
 	@ApiConsumes('multipart/form-data')
 	@ApiBody({
 		schema: {
@@ -115,8 +115,6 @@ export class UsersController {
 			},
 		},
 	})
-	@Post('/change-avatar')
-	@UseGuards(AuthGuard)
 	@UseInterceptors(FileInterceptor('file'))
 	async uploadAvatar(
 		@UploadedFile() avatar: Express.Multer.File,
@@ -125,4 +123,6 @@ export class UsersController {
 		const uploadFile = await this.cloudinaryService.uploadAvatar(avatar);
 		return await this.userService.changeAvatar(req.currentUser._id, uploadFile.url, uploadFile.public_id);
 	}
+
+
 }
