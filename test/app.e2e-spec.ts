@@ -3,7 +3,7 @@ import { AppModule } from '../src/app.module';
 import { INestApplication, ValidationPipe } from '@nestjs/common';
 import * as request from 'supertest';
 
-let port = 3001;
+const port = 3001;
 let app: INestApplication;
 describe('app endtoend', () => {
 	beforeAll(async () => {
