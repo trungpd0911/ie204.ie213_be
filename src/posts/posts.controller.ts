@@ -16,7 +16,12 @@ import { AuthGuard } from '../guards/auth.guard';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { responseData, responseError } from '../global/globalClass';
 import { RoleGuard } from '../guards/role.guard';
-import { invalidIdResponse, permissionErrorResponse, serverErrorResponse, tokenErrorResponse } from '../global/api-responses';
+import {
+	invalidIdResponse,
+	permissionErrorResponse,
+	serverErrorResponse,
+	tokenErrorResponse,
+} from '../global/api-responses';
 import { FilesInterceptor } from '@nestjs/platform-express';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
 
@@ -26,24 +31,30 @@ import { CloudinaryService } from '../cloudinary/cloudinary.service';
 export class PostsController {
 	constructor(
 		private postsService: PostsService,
-		private cloudinaryService: CloudinaryService
-	) { }
+		private cloudinaryService: CloudinaryService,
+	) {}
 
 	@ApiResponse({
-		status: 200, description: 'Get all post successfully', schema: {
-			example: new responseData([
-				{
-					_id: '60f9b5b1f4b4c9d8f8f8f8f8',
-					title: 'Post title',
-					header: 'Post header',
-					description: 'Post description',
-					keywords: ['keywords[]'],
-					content: 'Post content',
-					createdAt: '2021-07-23T07:30:09.000Z',
-					updatedAt: '2021-07-23T07:30:09.000Z'
-				}
-			], 200, 'Get all post successfully')
-		}
+		status: 200,
+		description: 'Get all post successfully',
+		schema: {
+			example: new responseData(
+				[
+					{
+						_id: '60f9b5b1f4b4c9d8f8f8f8f8',
+						title: 'Post title',
+						header: 'Post header',
+						description: 'Post description',
+						keywords: ['keywords[]'],
+						content: 'Post content',
+						createdAt: '2021-07-23T07:30:09.000Z',
+						updatedAt: '2021-07-23T07:30:09.000Z',
+					},
+				],
+				200,
+				'Get all post successfully',
+			),
+		},
 	})
 	@Get('/')
 	async getAllPosts() {
@@ -51,7 +62,9 @@ export class PostsController {
 	}
 
 	@ApiResponse({
-		status: 200, description: 'Get post by id successfully', schema: {
+		status: 200,
+		description: 'Get post by id successfully',
+		schema: {
 			example: new responseData(
 				{
 					_id: '60f9b5b1f4b4c9d8f8f8f8f8',
@@ -61,14 +74,19 @@ export class PostsController {
 					keywords: ['keywords[]'],
 					content: 'Post content',
 					createdAt: '2021-07-23T07:30:09.000Z',
-					updatedAt: '2021-07-23T07:30:09.000Z'
-				}, 200, 'Get post by id successfully')
-		}
+					updatedAt: '2021-07-23T07:30:09.000Z',
+				},
+				200,
+				'Get post by id successfully',
+			),
+		},
 	})
 	@ApiResponse({
-		status: 404, description: 'Post not found', schema: {
-			example: new responseError(404, 'Post not found')
-		}
+		status: 404,
+		description: 'Post not found',
+		schema: {
+			example: new responseError(404, 'Post not found'),
+		},
 	})
 	@invalidIdResponse
 	@Get('/:id')
@@ -77,14 +95,18 @@ export class PostsController {
 	}
 
 	@ApiResponse({
-		status: 201, description: 'Create post successfully', schema: {
-			example: new responseData(null, 201, 'Create post successfully')
-		}
+		status: 201,
+		description: 'Create post successfully',
+		schema: {
+			example: new responseData(null, 201, 'Create post successfully'),
+		},
 	})
 	@ApiResponse({
-		status: 400, description: 'Title already exist', schema: {
-			example: new responseError(400, 'Title already exist')
-		}
+		status: 400,
+		description: 'Title already exist',
+		schema: {
+			example: new responseError(400, 'Title already exist'),
+		},
 	})
 	@permissionErrorResponse
 	@tokenErrorResponse
@@ -104,9 +126,10 @@ export class PostsController {
 	@UseInterceptors(FilesInterceptor('blogImages'))
 	async uploadImage(
 		@UploadedFiles() blogImages: Express.Multer.File[],
-		@Request() req
+		@Request() req,
 	) {
-		const cloudImages = await this.cloudinaryService.uploadBlogImages(blogImages);
+		const cloudImages =
+			await this.cloudinaryService.uploadBlogImages(blogImages);
 		const blogId = req.body.blogId;
 		return this.postsService.uploadImages(cloudImages, blogId);
 	}

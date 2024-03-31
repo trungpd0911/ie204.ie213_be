@@ -7,7 +7,7 @@ export class Discount {
 	discountCode: string;
 
 	@Prop({ required: true })
-	discountPercent: Number;
+	discountPercent: number;
 
 	@Prop({ required: true })
 	discountDescription: string;
@@ -24,8 +24,8 @@ export class Discount {
 			{
 				userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
 				used: Boolean,
-			}
-		]
+			},
+		],
 	})
 	users: {
 		userId: { type: mongoose.Schema.Types.ObjectId; ref: 'User' };

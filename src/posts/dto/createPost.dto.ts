@@ -20,11 +20,7 @@ export class CreatePostDto {
 	description: string;
 
 	@ApiProperty({
-		example: [
-			'keyword1',
-			'keyword2',
-			'keyword3',
-		]
+		example: ['keyword1', 'keyword2', 'keyword3'],
 	})
 	@IsNotEmpty()
 	@IsString({ each: true })

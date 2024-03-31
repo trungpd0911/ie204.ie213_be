@@ -6,16 +6,16 @@ import { Post, PostSchema } from '../schemas/Post.schema';
 import { CloudinaryModule } from '../cloudinary/cloudinary.module';
 
 @Module({
-  imports: [
-    CloudinaryModule,
-    MongooseModule.forFeature([
-      {
-        name: Post.name,
-        schema: PostSchema,
-      },
-    ]),
-  ],
-  controllers: [PostsController],
-  providers: [PostsService],
+	imports: [
+		CloudinaryModule,
+		MongooseModule.forFeature([
+			{
+				name: Post.name,
+				schema: PostSchema,
+			},
+		]),
+	],
+	controllers: [PostsController],
+	providers: [PostsService],
 })
-export class PostsModule { }
+export class PostsModule {}

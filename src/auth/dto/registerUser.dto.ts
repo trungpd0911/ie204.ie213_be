@@ -9,7 +9,7 @@ import {
 
 export class RegisterUserDto {
 	@ApiProperty({
-		example: 'admin@gmail.com'
+		example: 'admin@gmail.com',
 	})
 	@IsNotEmpty()
 	@IsString()
@@ -17,14 +17,14 @@ export class RegisterUserDto {
 	email: string;
 
 	@ApiProperty({
-		example: 'bepuit'
+		example: 'bepuit',
 	})
 	@IsNotEmpty()
 	@IsString()
 	username: string;
 
 	@ApiProperty({
-		example: 'bepuit123'
+		example: 'bepuit123',
 	})
 	@IsNotEmpty()
 	@IsString()

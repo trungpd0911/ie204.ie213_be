@@ -6,10 +6,10 @@ import { User } from './User.schema';
 @Schema({ timestamps: true })
 export class Bill {
 	@Prop({ required: true })
-	totalMoney: Number;
+	totalMoney: number;
 
 	@Prop({ required: true })
-	billPayed: Boolean;
+	billPayed: boolean;
 
 	@Prop({
 		required: false,
@@ -35,7 +35,7 @@ export class Bill {
 	})
 	billDishes: {
 		dishId: mongoose.Schema.Types.ObjectId;
-		dishAmount: Number;
+		dishAmount: number;
 	}[];
 }
 

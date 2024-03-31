@@ -10,8 +10,8 @@ import { CloudinaryService } from '../cloudinary/cloudinary.service';
 export class UsersService {
 	constructor(
 		@InjectModel(User.name) private userModel: Model<User>,
-		private cloudinaryService: CloudinaryService
-	) { }
+		private cloudinaryService: CloudinaryService,
+	) {}
 
 	async findUserByEmail(email: string) {
 		try {
@@ -36,7 +36,9 @@ export class UsersService {
 			if (!Types.ObjectId.isValid(id)) {
 				return new HttpException('Invalid id', 400);
 			}
-			const user = await this.userModel.findById(id).select('-password -role');
+			const user = await this.userModel
+				.findById(id)
+				.select('-password -role');
 			if (!user) {
 				return new HttpException('User not found', 404);
 			}
@@ -73,7 +75,10 @@ export class UsersService {
 			if (!user) {
 				return new HttpException('User not found', 404);
 			}
-			if (user.avatar.link != "https://res.cloudinary.com/dsygiu1h0/image/upload/v1711611594/default-avatar.webp") {
+			if (
+				user.avatar.link !=
+				'https://res.cloudinary.com/dsygiu1h0/image/upload/v1711611594/default-avatar.webp'
+			) {
 				console.log(user);
 				await this.cloudinaryService.deleteFile(public_id);
 			}

@@ -3,7 +3,7 @@ import { BillController } from './bill.controller';
 import { BillService } from './bill.service';
 
 @Module({
-  controllers: [BillController],
-  providers: [BillService]
+	controllers: [BillController],
+	providers: [BillService],
 })
 export class BillModule {}

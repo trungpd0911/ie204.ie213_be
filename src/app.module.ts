@@ -8,6 +8,7 @@ import { JwtModule, JwtModuleOptions } from '@nestjs/jwt';
 import { BillModule } from './bill/bill.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { UsersService } from './users/users.service';
+import { DishesModule } from './dishes/dishes.module';
 
 @Module({
 	imports: [
@@ -40,8 +41,9 @@ import { UsersService } from './users/users.service';
 		PostsModule,
 		BillModule,
 		CloudinaryModule,
+		DishesModule,
 	],
 	controllers: [],
 	providers: [],
 })
-export class AppModule { }
+export class AppModule {}

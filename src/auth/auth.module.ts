@@ -8,18 +8,18 @@ import { ConfigModule } from '@nestjs/config';
 import { PassportModule } from '@nestjs/passport';
 
 @Module({
-  imports: [
-    ConfigModule.forRoot({}),
-    MongooseModule.forFeature([
-      {
-        name: User.name,
-        schema: UserSchema,
-      },
-    ]),
-    PassportModule,
-    UsersModule,
-  ],
-  controllers: [AuthController],
-  providers: [AuthService],
+	imports: [
+		ConfigModule.forRoot({}),
+		MongooseModule.forFeature([
+			{
+				name: User.name,
+				schema: UserSchema,
+			},
+		]),
+		PassportModule,
+		UsersModule,
+	],
+	controllers: [AuthController],
+	providers: [AuthService],
 })
-export class AuthModule { }
+export class AuthModule {}

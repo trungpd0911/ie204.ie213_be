@@ -15,7 +15,7 @@ export class Employee {
 	startWorkingDay: Date;
 
 	@Prop({ required: true, type: Number })
-	salary: Number;
+	salary: number;
 
 	@Prop({ required: true, type: String })
 	workShift: string;

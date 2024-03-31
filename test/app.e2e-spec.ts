@@ -1,11 +1,11 @@
-import { Test } from "@nestjs/testing"
-import { AppModule } from "../src/app.module"
-import { INestApplication, ValidationPipe } from "@nestjs/common"
-import * as request from "supertest";
+import { Test } from '@nestjs/testing';
+import { AppModule } from '../src/app.module';
+import { INestApplication, ValidationPipe } from '@nestjs/common';
+import * as request from 'supertest';
 
 let port = 3001;
 let app: INestApplication;
-describe("app endtoend", () => {
+describe('app endtoend', () => {
 	beforeAll(async () => {
 		const appModule = await Test.createTestingModule({
 			imports: [AppModule],
@@ -13,17 +13,17 @@ describe("app endtoend", () => {
 		app = appModule.createNestApplication();
 		app.useGlobalPipes(new ValidationPipe());
 		await app.listen(port);
-	})
+	});
 
 	afterAll(async () => {
 		app.close();
-	})
-	it.todo("should be defined");
-})
+	});
+	it.todo('should be defined');
+});
 
-describe("test authentication", () => {
-	describe("register", () => {
-		it("register", async () => {
+describe('test authentication', () => {
+	describe('register', () => {
+		it('register', async () => {
 			// const response = await request(app.getHttpServer())
 			// 	.post("/auth/register")
 			// 	.send({
@@ -35,8 +35,8 @@ describe("test authentication", () => {
 			// expect(response.status).toBe(201);
 			expect(1).toBe(1);
 		});
-	})
-	describe("login", () => {
-		it.todo("should login");
-	})
-})
+	});
+	describe('login', () => {
+		it.todo('should login');
+	});
+});
