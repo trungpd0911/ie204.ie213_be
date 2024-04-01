@@ -48,10 +48,15 @@ export class PostsService {
 			}
 			const slugName = configSlug.convertToSlug(createPostDto.title);
 			const newPost = new this.postModel({
-				...createPostDto,
-				slugName,
 				authorId: userId,
-			});
+				content: createPostDto.content,
+				description: createPostDto.description,
+				header: createPostDto.header,
+				keywords: createPostDto.keywords,
+				title: createPostDto.title,
+				slugName: slugName,
+				blogImages: createPostDto.blogImages,
+			})
 			await newPost.save();
 			return new responseData(null, 201, 'Post created successfully');
 		} catch (error) {

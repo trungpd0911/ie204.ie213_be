@@ -24,6 +24,20 @@ export class Post {
 
 	@Prop({ required: true, type: mongoose.Schema.Types.ObjectId, ref: 'User' })
 	authorId: User;
+
+	@Prop({
+		required: false,
+		type: [
+			{
+				url: String,
+				publicId: String,
+			},
+		],
+	})
+	blogImages: {
+		url: String;
+		publicId: String;
+	}[];
 }
 
 export const PostSchema = SchemaFactory.createForClass(Post);
