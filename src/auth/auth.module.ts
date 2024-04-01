@@ -5,7 +5,6 @@ import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { UsersModule } from '../users/users.module';
 import { ConfigModule } from '@nestjs/config';
-import { PassportModule } from '@nestjs/passport';
 
 @Module({
   imports: [
@@ -16,7 +15,6 @@ import { PassportModule } from '@nestjs/passport';
         schema: UserSchema,
       },
     ]),
-    PassportModule,
     UsersModule,
   ],
   controllers: [AuthController],

@@ -34,4 +34,19 @@ export class CreatePostDto {
 	@IsNotEmpty()
 	@IsString()
 	content: string;
+
+	@ApiProperty({
+		example: [
+			{
+				url: 'image url',
+				publicId: 'image publicId',
+			}
+		]
+	})
+	blogImages: [
+		{
+			url: string;
+			publicId: string;
+		}
+	]
 }

@@ -17,8 +17,6 @@ import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { responseData, responseError } from '../global/globalClass';
 import { RoleGuard } from '../guards/role.guard';
 import { invalidIdResponse, permissionErrorResponse, serverErrorResponse, tokenErrorResponse } from '../global/api-responses';
-import { FilesInterceptor } from '@nestjs/platform-express';
-import { CloudinaryService } from '../cloudinary/cloudinary.service';
 
 @ApiTags('posts')
 @Controller('posts')
@@ -26,7 +24,6 @@ import { CloudinaryService } from '../cloudinary/cloudinary.service';
 export class PostsController {
 	constructor(
 		private postsService: PostsService,
-		private cloudinaryService: CloudinaryService
 	) { }
 
 	@ApiResponse({
@@ -95,19 +92,5 @@ export class PostsController {
 	async createPost(@Req() req, @Body() createPostDto: CreatePostDto) {
 		const userId = req.currentUser._id;
 		return await this.postsService.createPost(createPostDto, userId);
-	}
-
-	@permissionErrorResponse
-	@tokenErrorResponse
-	@ApiBearerAuth()
-	@Post('/upload-images')
-	@UseInterceptors(FilesInterceptor('blogImages'))
-	async uploadImage(
-		@UploadedFiles() blogImages: Express.Multer.File[],
-		@Request() req
-	) {
-		const cloudImages = await this.cloudinaryService.uploadBlogImages(blogImages);
-		const blogId = req.body.blogId;
-		return this.postsService.uploadImages(cloudImages, blogId);
 	}
 }
