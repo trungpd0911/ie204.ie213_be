@@ -7,10 +7,14 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { JwtModule, JwtModuleOptions } from '@nestjs/jwt';
 import { BillModule } from './bill/bill.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
-import { UsersService } from './users/users.service';
+import { ThrottlerModule } from '@nestjs/throttler';
 
 @Module({
 	imports: [
+		// ThrottlerModule.forRoot([{
+		// 	ttl: 3000,
+		// 	limit: 2,
+		// }]),
 		ConfigModule.forRoot({
 			isGlobal: true,
 			envFilePath: '.env',

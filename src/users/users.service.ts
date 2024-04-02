@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { responseData } from '../global/globalClass';
 import { User } from '../schemas/User.schema';
-import { updateUserDto } from './dto/updateUser.dto';
+import { UpdateUserDto } from './dto/UpdateUser.dto';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
 
 @Injectable()
@@ -46,7 +46,7 @@ export class UsersService {
 		}
 	}
 
-	async updateUser(userId, id: string, updateUserDto: updateUserDto) {
+	async updateUser(userId, id: string, updateUserDto: UpdateUserDto) {
 		try {
 			if (!Types.ObjectId.isValid(id)) {
 				return new HttpException('Invalid id', 400);

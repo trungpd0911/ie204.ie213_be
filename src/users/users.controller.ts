@@ -7,7 +7,7 @@ import { currentUser } from './decorators/currentUser.decorator';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { responseData, responseError } from '../global/globalClass';
-import { updateUserDto } from './dto/updateUser.dto';
+import { UpdateUserDto } from './dto/UpdateUser.dto';
 import { invalidIdResponse, permissionErrorResponse, serverErrorResponse, tokenErrorResponse } from '../global/api-responses';
 
 // swagger
@@ -94,7 +94,7 @@ export class UsersController {
 	async updateUser(
 		@Request() req,
 		@Param('id') id: string,
-		@Body() updateUserDto: updateUserDto
+		@Body() updateUserDto: UpdateUserDto
 	) {
 		const userId = req.currentUser._id;
 		return this.userService.updateUser(userId, id, updateUserDto);
