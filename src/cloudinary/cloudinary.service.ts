@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { v2 } from 'cloudinary';
 import * as streamifier from 'streamifier';
 import { CloudinaryResponse } from './cloudinary-response';
+import * as path from 'path';
 
 @Injectable()
 export class CloudinaryService {
@@ -9,6 +10,18 @@ export class CloudinaryService {
 
 	uploadAvatar(file: Express.Multer.File): Promise<CloudinaryResponse> {
 		return new Promise<CloudinaryResponse>((resolve, reject) => {
+			const ext = path.extname(file.originalname).toLowerCase();
+			if (
+				ext !== '.jpg' &&
+				ext !== '.jpeg' &&
+				ext !== '.png' &&
+				ext !== '.gif' &&
+				ext !== '.webp' &&
+				ext !== '.svg'
+			) {
+				reject(new Error('Invalid file type'));
+				return;
+			}
 			const upload = v2.uploader.upload_stream(
 				{ folder: 'bepUIT-avatar' },
 				(error, result) => {
@@ -37,10 +50,21 @@ export class CloudinaryService {
 	uploadDishImages(
 		files: Express.Multer.File[],
 	): Promise<CloudinaryResponse[]> {
-		console.log(files);
 		return new Promise<CloudinaryResponse[]>((resolve, reject) => {
 			const responses: CloudinaryResponse[] = [];
 			files.forEach((file) => {
+				const ext = path.extname(file.originalname).toLowerCase();
+				if (
+					ext !== '.jpg' &&
+					ext !== '.jpeg' &&
+					ext !== '.png' &&
+					ext !== '.gif' &&
+					ext !== '.webp' &&
+					ext !== '.svg'
+				) {
+					reject(new Error('Invalid file type'));
+					return;
+				}
 				const upload = v2.uploader.upload_stream(
 					{ folder: 'bepUIT-dishImages' },
 					(error, result) => {

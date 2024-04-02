@@ -19,6 +19,12 @@ export class Dish {
 	@Prop({ required: true, type: mongoose.Schema.Types.ObjectId, ref: 'Menu' })
 	menuId: Menu;
 
+	@Prop({ required: true, default: 5 })
+	rating: Number;
+
+	@Prop({ required: true })
+	slugName: string;
+
 	@Prop({
 		required: false,
 		type: [

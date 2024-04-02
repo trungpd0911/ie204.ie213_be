@@ -11,7 +11,7 @@ import {
 	UseInterceptors,
 } from '@nestjs/common';
 import { PostsService } from './posts.service';
-import { CreatePostDto } from './dto/createPost.dto';
+import { CreatePostDto } from './dto/CreatePost.dto';
 import { AuthGuard } from '../guards/auth.guard';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { responseData, responseError } from '../global/globalClass';
@@ -22,17 +22,12 @@ import {
 	serverErrorResponse,
 	tokenErrorResponse,
 } from '../global/api-responses';
-import { FilesInterceptor } from '@nestjs/platform-express';
-import { CloudinaryService } from '../cloudinary/cloudinary.service';
 
 @ApiTags('posts')
 @Controller('posts')
 @serverErrorResponse
 export class PostsController {
-	constructor(
-		private postsService: PostsService,
-		private cloudinaryService: CloudinaryService,
-	) {}
+	constructor(private postsService: PostsService) {}
 
 	@ApiResponse({
 		status: 200,
@@ -101,36 +96,14 @@ export class PostsController {
 			example: new responseData(null, 201, 'Create post successfully'),
 		},
 	})
-	@ApiResponse({
-		status: 400,
-		description: 'Title already exist',
-		schema: {
-			example: new responseError(400, 'Title already exist'),
-		},
-	})
 	@permissionErrorResponse
 	@tokenErrorResponse
 	@ApiBearerAuth()
 	@Post('/')
 	@UseGuards(new RoleGuard(['admin']))
 	@UseGuards(AuthGuard)
-	async createPost(@Req() req, @Body() createPostDto: CreatePostDto) {
+	async createPost(@Request() req, @Body() createPostDto: CreatePostDto) {
 		const userId = req.currentUser._id;
 		return await this.postsService.createPost(createPostDto, userId);
-	}
-
-	@permissionErrorResponse
-	@tokenErrorResponse
-	@ApiBearerAuth()
-	@Post('/upload-images')
-	@UseInterceptors(FilesInterceptor('blogImages'))
-	async uploadImage(
-		@UploadedFiles() blogImages: Express.Multer.File[],
-		@Request() req,
-	) {
-		const cloudImages =
-			await this.cloudinaryService.uploadBlogImages(blogImages);
-		const blogId = req.body.blogId;
-		return this.postsService.uploadImages(cloudImages, blogId);
 	}
 }
