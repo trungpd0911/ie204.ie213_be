@@ -2,7 +2,7 @@ import { HttpException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Post } from '../schemas/Post.schema';
-import { CreatePostDto } from './dto/createPost.dto';
+import { CreatePostDto } from './dto/CreatePost.dto';
 import { configSlug } from '../helper/slug.helper';
 import { responseData } from '../global/globalClass';
 
@@ -40,13 +40,6 @@ export class PostsService {
 
 	async createPost(createPostDto: CreatePostDto, userId: string) {
 		try {
-			const checkExistTitle = await this.postModel.findOne({
-				title: createPostDto.title,
-			});
-			if (checkExistTitle) {
-				throw new HttpException('Title already exist', 400);
-			}
-			const slugName = configSlug.convertToSlug(createPostDto.title);
 			const newPost = new this.postModel({
 				authorId: userId,
 				content: createPostDto.content,
@@ -54,9 +47,10 @@ export class PostsService {
 				header: createPostDto.header,
 				keywords: createPostDto.keywords,
 				title: createPostDto.title,
-				slugName: slugName,
 				blogImages: createPostDto.blogImages,
 			})
+			const slugName = configSlug.convertToSlug(createPostDto.title) + '-' + newPost._id;
+			newPost.slugName = slugName;
 			await newPost.save();
 			return new responseData(null, 201, 'Post created successfully');
 		} catch (error) {
