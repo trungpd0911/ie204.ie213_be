@@ -9,7 +9,6 @@ import {
 	UseInterceptors,
 	UploadedFiles,
 	Res,
-	UseFilters,
 } from '@nestjs/common';
 import { DishesService } from './dishes.service';
 import { CreateDishDto } from './dto/create-dish.dto';
@@ -17,7 +16,6 @@ import { FilesInterceptor } from '@nestjs/platform-express';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { CloudinaryResponse } from 'src/cloudinary/cloudinary-response';
 import UpdateDishDto from './dto/update-dish.dto';
-import { HttpExceptionFilter } from '../global/http-exception.filter';
 
 @Controller('dishes')
 export class DishesController {
@@ -41,43 +39,42 @@ export class DishesController {
 				await this.cloudinaryService.uploadDishImages(dishImages);
 		}
 
-		return this.dishesService.createDish(savedImages, createDishDto);
+		return await this.dishesService.createDish(savedImages, createDishDto);
 	}
 
 	@Put('/:id')
-	updateDishById(
+	async updateDishById(
 		@Param('id') id: string,
 		@Body() updateDishDto: UpdateDishDto,
 	) {
-		return this.dishesService.update(+id, updateDishDto);
+		return await this.dishesService.updateDishById(id, updateDishDto);
 	}
 
 	@Delete('/:id')
-	removeDishById(@Param('id') id: string) {
-		return this.dishesService.remove(+id);
+	async removeDishById(@Param('id') id: string) {
+		return await this.dishesService.removeDishById(id);
 	}
 
 	// User role
 	@Get('/')
-	getAllDishes() {
-		return this.dishesService.getAllDishes();
+	async getAllDishes() {
+		return await this.dishesService.getAllDishes();
 	}
 
-	// @UseFilters(HttpExceptionFilter)
 	@Get('/:id')
-	getDishById(@Param('id') id: string) {
-		return this.dishesService.getDishById(id);
+	async getDishById(@Param('id') id: string) {
+		return await this.dishesService.getDishById(id);
 	}
 
 	@Get('/filter')
-	getDishesByPriceAndMenuName() {}
+	async getDishesByPriceAndMenuName() {}
 
 	@Get('/search')
-	searchDishesByName() {}
+	async searchDishesByName() {}
 
 	@Get('/comments/:dishId')
-	getAllCommentsOfDish(@Param('dishId') dishId: string) {}
+	async getAllCommentsOfDish(@Param('dishId') dishId: string) {}
 
 	@Get('/relative/:id')
-	getSomeRelativeDishes(@Param('id') id: string) {}
+	async getSomeRelativeDishes(@Param('id') id: string) {}
 }

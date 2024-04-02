@@ -1,6 +1,7 @@
 import {
 	BadRequestException,
 	HttpException,
+	HttpStatus,
 	Injectable,
 	InternalServerErrorException,
 	NotFoundException,
@@ -53,16 +54,20 @@ export class DishesService {
 				'Dish created successfully',
 			);
 		} catch (e) {
-			new HttpException(e, 500);
+			throw new HttpException(e, 500);
 		}
 	}
 
 	async getAllDishes() {
 		try {
 			const dishes = await this.dishModel.find();
+
+			if (dishes.length == 0) {
+				throw new NotFoundException('No dish found');
+			}
 			return new responseData(dishes, 200, 'Get all dishes successfully');
 		} catch (e) {
-			new HttpException(e, 500);
+			throw new HttpException(e, 500);
 		}
 	}
 
@@ -86,11 +91,47 @@ export class DishesService {
 		}
 	}
 
-	update(id: number, updateDishDto: UpdateDishDto) {
-		return `This action updates a #${id} dish`;
+	async updateDishById(id: string, updateDishDto: UpdateDishDto) {
+		try {
+			const dish = await this.dishModel.findById(id);
+			if (dish == null) {
+				throw new NotFoundException('Dish not found');
+			}
+
+			const updatedDish = await this.dishModel.findByIdAndUpdate(
+				id,
+				updateDishDto,
+				{
+					new: true,
+				},
+			);
+			return new responseData(
+				updatedDish,
+				HttpStatus.OK,
+				'Dish is updated successfully',
+			);
+		} catch (e) {
+			throw new InternalServerErrorException(e);
+		}
 	}
 
-	remove(id: number) {
-		return `This action removes a #${id} dish`;
+	async removeDishById(id: string) {
+		try {
+			const dish = await this.dishModel.findById(id);
+			if (dish == null) {
+				throw new NotFoundException('Dish not found');
+			}
+
+			// Todo: Need to remove all images of the dish
+
+			await this.dishModel.deleteOne({ _id: id });
+			return new responseData(
+				null,
+				HttpStatus.OK,
+				'Dish is deleted successfully',
+			);
+		} catch (e) {
+			throw new InternalServerErrorException(e);
+		}
 	}
 }

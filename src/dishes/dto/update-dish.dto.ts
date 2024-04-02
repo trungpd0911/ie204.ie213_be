@@ -3,4 +3,8 @@ export default class UpdateDishDto {
 	dishPrice: number;
 	dishDescription: string;
 	menuId: string;
+	dishImages: {
+		link: string;
+		id: string;
+	}[];
 }
