@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { AuthModule } from './auth/auth.module';
 import { UsersModule } from './users/users.module';
 import { PostsModule } from './posts/posts.module';
@@ -10,6 +10,8 @@ import { CloudinaryModule } from './cloudinary/cloudinary.module';
 import { UsersService } from './users/users.service';
 import { DishesModule } from './dishes/dishes.module';
 import { ThrottlerModule } from '@nestjs/throttler';
+import { AppLoggerMiddleware } from './middlewares/logging-middleware';
+import { MenusModule } from './menus/menus.module';
 
 @Module({
 	imports: [
@@ -47,8 +49,13 @@ import { ThrottlerModule } from '@nestjs/throttler';
 		BillModule,
 		CloudinaryModule,
 		DishesModule,
+		MenusModule,
 	],
 	controllers: [],
 	providers: [],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+	configure(consumer: MiddlewareConsumer): void {
+		consumer.apply(AppLoggerMiddleware).forRoutes('*');
+	}
+}

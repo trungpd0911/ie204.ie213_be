@@ -65,6 +65,7 @@ export class CloudinaryService {
 					reject(new Error('Invalid file type'));
 					return;
 				}
+
 				const upload = v2.uploader.upload_stream(
 					{ folder: 'bepUIT-dishImages' },
 					(error, result) => {

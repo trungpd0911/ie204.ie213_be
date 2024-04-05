@@ -5,7 +5,6 @@ import { MulterModule } from '@nestjs/platform-express';
 import { CloudinaryModule } from 'src/cloudinary/cloudinary.module';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Dish, DishSchema } from 'src/schemas/Dish.schema';
-import { NestjsFormDataModule, FormDataRequest } from 'nestjs-form-data';
 import { APP_FILTER } from '@nestjs/core';
 import { HttpExceptionFilter } from '../global/http-exception.filter';
 
@@ -15,7 +14,6 @@ import { HttpExceptionFilter } from '../global/http-exception.filter';
 			// dest: '/dish-files-upload',
 		}),
 		CloudinaryModule,
-		NestjsFormDataModule,
 		MongooseModule.forFeature([
 			{
 				name: Dish.name,

@@ -20,7 +20,7 @@ export class Dish {
 	menuId: Menu;
 
 	@Prop({ required: true, default: 5 })
-	rating: Number;
+	rating: number;
 
 	@Prop({ required: true })
 	slugName: string;

@@ -35,8 +35,8 @@ export class Post {
 		],
 	})
 	blogImages: {
-		url: String;
-		publicId: String;
+		url: string;
+		publicId: string;
 	}[];
 }
 
