@@ -1,8 +1,6 @@
 import { HttpException, Injectable, NotFoundException } from '@nestjs/common';
-import { CreateMenuDto } from './dto/create-menu.dto';
-import { UpdateMenuDto } from './dto/update-menu.dto';
-import { responseData } from 'src/global/globalClass';
-import { Menu } from 'src/schemas/Menu.schema';
+import { responseData } from '../global/globalClass';
+import { Menu } from '../schemas/Menu.schema';
 import { Model } from 'mongoose';
 import { InjectModel } from '@nestjs/mongoose';
 

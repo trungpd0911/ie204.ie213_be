@@ -1,42 +1,36 @@
-import {
-	Controller,
-	Get,
-	Post,
-	Body,
-	Patch,
-	Param,
-	Delete,
-} from '@nestjs/common';
+import { Controller, Get, HttpStatus } from '@nestjs/common';
 import { MenusService } from './menus.service';
-import { CreateMenuDto } from './dto/create-menu.dto';
-import { UpdateMenuDto } from './dto/update-menu.dto';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+	CustomInternalServerErrorApiResponse,
+	CustomSuccessfulApiResponse,
+	serverErrorResponse,
+} from 'src/global/api-responses';
+import { responseData } from 'src/global/globalClass';
 
+@ApiTags('menus')
 @Controller('/menus')
+@serverErrorResponse
 export class MenusController {
 	constructor(private readonly menusService: MenusService) {}
 
-	// @Post()
-	// create(@Body() createMenuDto: CreateMenuDto) {
-	//   return this.menusService.create(createMenuDto);
-	// }
-
+	@ApiOperation({ summary: 'Get all  menus' })
+	@CustomSuccessfulApiResponse('Get all menus successfully', HttpStatus.OK, [
+		{
+			_id: '6608301dc11b247adbd84f28',
+			menuName: 'Thực đơn chính',
+		},
+		{
+			_id: '66083088c11b247adbd84f29',
+		},
+		{
+			_id: '66083097c11b247adbd84f2a',
+			menuName: 'Thức uống',
+		},
+	])
+	@CustomInternalServerErrorApiResponse('Internal server error')
 	@Get('/')
 	getAllMenus() {
 		return this.menusService.getAllMenus();
 	}
-
-	// @Get(':id')
-	// findOne(@Param('id') id: string) {
-	//   return this.menusService.findOne(+id);
-	// }
-
-	// @Patch(':id')
-	// update(@Param('id') id: string, @Body() updateMenuDto: UpdateMenuDto) {
-	//   return this.menusService.update(+id, updateMenuDto);
-	// }
-
-	// @Delete(':id')
-	// remove(@Param('id') id: string) {
-	//   return this.menusService.remove(+id);
-	// }
 }

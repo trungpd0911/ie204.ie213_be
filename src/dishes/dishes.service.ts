@@ -90,12 +90,11 @@ export class DishesService {
 	}
 
 	async getDishById(id: string) {
-		try {
-			// Check if id is valid
-			if (!Types.ObjectId.isValid(id)) {
-				throw new BadRequestException('Invalid id');
-			}
+		if (!Types.ObjectId.isValid(id)) {
+			throw new BadRequestException('Invalid id');
+		}
 
+		try {
 			const dish = await this.dishModel.findById(id);
 
 			// Check if dish exists
@@ -110,6 +109,10 @@ export class DishesService {
 	}
 
 	async updateDishById(id: string, updateDishDto: UpdateDishDto) {
+		if (!Types.ObjectId.isValid(id)) {
+			throw new BadRequestException('Invalid id');
+		}
+
 		try {
 			const dish = await this.dishModel.findById(id);
 			if (dish == null) {
@@ -134,6 +137,10 @@ export class DishesService {
 	}
 
 	async removeDishById(id: string) {
+		if (!Types.ObjectId.isValid(id)) {
+			throw new BadRequestException('Invalid id');
+		}
+
 		try {
 			const dish = await this.dishModel.findById(id);
 			if (dish == null) {
@@ -163,6 +170,10 @@ export class DishesService {
 	}
 
 	async searchDishesByName(keyword: string) {
+		if (keyword == null || keyword == undefined) {
+			throw new BadRequestException('Invalid keyword parameter');
+		}
+
 		try {
 			// Ignore case sensitive
 			const dishes = await this.dishModel.find({
@@ -179,7 +190,6 @@ export class DishesService {
 				'Search dishes by name successfully',
 			);
 		} catch (e) {
-			console.log(e);
 			throw new InternalServerErrorException(e);
 		}
 	}
@@ -213,7 +223,11 @@ export class DishesService {
 				isLastPage: isLastPage,
 			};
 
-			return new responseData(data, 200, 'Get all dishes successfully');
+			return new responseData(
+				data,
+				200,
+				'Get all dishes with pagination successfully',
+			);
 		} catch (e) {
 			throw new HttpException(e, 500);
 		}
@@ -287,6 +301,14 @@ export class DishesService {
 
 	// STRATEGY: Random a number of dishes in the same menu
 	async getSomeRelativeDishes(id: string, number: number) {
+		if (!Types.ObjectId.isValid(id)) {
+			throw new BadRequestException('Invalid id');
+		}
+
+		if (number <= 0) {
+			throw new BadRequestException('Invalid number parameter');
+		}
+
 		try {
 			const requestedDish = await this.dishModel.findById(id);
 			if (!requestedDish) {
