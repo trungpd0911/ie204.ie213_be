@@ -8,12 +8,11 @@ import { responseData } from '../global/globalClass';
 
 @Injectable()
 export class PostsService {
-	constructor(@InjectModel(Post.name) private postModel: Model<Post>) { }
+	constructor(@InjectModel(Post.name) private postModel: Model<Post>) {}
 
 	async getAllPosts() {
 		try {
-			const allPost = await this.postModel
-				.find()
+			const allPost = await this.postModel.find();
 			// .populate('authorId', 'username');
 			return new responseData(allPost, 200, 'Get all post successfully');
 		} catch (error) {
@@ -26,8 +25,7 @@ export class PostsService {
 			if (!Types.ObjectId.isValid(id)) {
 				throw new HttpException('Invalid id', 400);
 			}
-			const post = await this.postModel
-				.findById(id)
+			const post = await this.postModel.findById(id);
 			// .populate('authorId', 'username');
 			if (!post) {
 				throw new HttpException('Post not found', 404);
@@ -48,8 +46,11 @@ export class PostsService {
 				keywords: createPostDto.keywords,
 				title: createPostDto.title,
 				blogImages: createPostDto.blogImages,
-			})
-			const slugName = configSlug.convertToSlug(createPostDto.title) + '-' + newPost._id;
+			});
+			const slugName =
+				configSlug.convertToSlug(createPostDto.title) +
+				'-' +
+				newPost._id;
 			newPost.slugName = slugName;
 			await newPost.save();
 			return new responseData(null, 201, 'Post created successfully');
@@ -63,6 +64,5 @@ export class PostsService {
 		} catch (error) {
 			throw error;
 		}
-
 	}
 }

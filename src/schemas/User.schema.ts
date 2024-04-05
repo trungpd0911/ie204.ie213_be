@@ -39,20 +39,25 @@ export class User {
 	}[];
 
 	@Prop({
-		type: { link: String, publicId: String }, default: {
-			link: "https://res.cloudinary.com/dsygiu1h0/image/upload/v1711611594/default-avatar.webp",
-			publicId: "",
-		}
+		type: { link: String, publicId: String },
+		default: {
+			link: 'https://res.cloudinary.com/dsygiu1h0/image/upload/v1711611594/default-avatar.webp',
+			publicId: '',
+		},
 	})
 	avatar: { link: string; publicId: string };
 
 	@Prop({
-		required: false, type: [
+		required: false,
+		type: [
 			{
-				discountId: { type: mongoose.Schema.Types.ObjectId, ref: 'Discount' },
+				discountId: {
+					type: mongoose.Schema.Types.ObjectId,
+					ref: 'Discount',
+				},
 				used: Boolean,
-			}
-		]
+			},
+		],
 	})
 	discounts: {
 		discountId: { type: mongoose.Schema.Types.ObjectId; ref: 'Discount' };

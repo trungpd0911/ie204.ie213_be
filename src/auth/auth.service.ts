@@ -17,7 +17,7 @@ export class AuthService {
 	constructor(
 		@InjectModel(User.name) private userModel: Model<User>,
 		private jwtService: JwtService,
-	) { }
+	) {}
 
 	private async hashPassword(password: string): Promise<string> {
 		const saltRounds = 10;
@@ -84,7 +84,11 @@ export class AuthService {
 			const { password, ...user } = checkUser.toObject();
 			const accessToken = await this.generateAccessToken(user);
 			const refreshToken = await this.generateRefreshToken(user);
-			return new responseData({ accessToken, refreshToken }, 200, 'Login successfully');
+			return new responseData(
+				{ accessToken, refreshToken },
+				200,
+				'Login successfully',
+			);
 		} catch (error) {
 			if (error instanceof HttpException) {
 				throw error;
@@ -115,7 +119,11 @@ export class AuthService {
 			const { password, ...user } = checkUser.toObject();
 			const accessToken = await this.generateAccessToken(user);
 			const refreshToken = await this.generateRefreshToken(user);
-			return new responseData({ accessToken, refreshToken }, 200, 'Login successfully');
+			return new responseData(
+				{ accessToken, refreshToken },
+				200,
+				'Login successfully',
+			);
 		} catch (error) {
 			if (error instanceof HttpException) {
 				throw error;

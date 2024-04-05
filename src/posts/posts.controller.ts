@@ -16,31 +16,40 @@ import { AuthGuard } from '../guards/auth.guard';
 import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { responseData, responseError } from '../global/globalClass';
 import { RoleGuard } from '../guards/role.guard';
-import { invalidIdResponse, permissionErrorResponse, serverErrorResponse, tokenErrorResponse } from '../global/api-responses';
+import {
+	invalidIdResponse,
+	permissionErrorResponse,
+	serverErrorResponse,
+	tokenErrorResponse,
+} from '../global/api-responses';
 
 @ApiTags('posts')
 @Controller('posts')
 @serverErrorResponse
 export class PostsController {
-	constructor(
-		private postsService: PostsService,
-	) { }
+	constructor(private postsService: PostsService) {}
 
 	@ApiResponse({
-		status: 200, description: 'Get all post successfully', schema: {
-			example: new responseData([
-				{
-					_id: '60f9b5b1f4b4c9d8f8f8f8f8',
-					title: 'Post title',
-					header: 'Post header',
-					description: 'Post description',
-					keywords: ['keywords[]'],
-					content: 'Post content',
-					createdAt: '2021-07-23T07:30:09.000Z',
-					updatedAt: '2021-07-23T07:30:09.000Z'
-				}
-			], 200, 'Get all post successfully')
-		}
+		status: 200,
+		description: 'Get all post successfully',
+		schema: {
+			example: new responseData(
+				[
+					{
+						_id: '60f9b5b1f4b4c9d8f8f8f8f8',
+						title: 'Post title',
+						header: 'Post header',
+						description: 'Post description',
+						keywords: ['keywords[]'],
+						content: 'Post content',
+						createdAt: '2021-07-23T07:30:09.000Z',
+						updatedAt: '2021-07-23T07:30:09.000Z',
+					},
+				],
+				200,
+				'Get all post successfully',
+			),
+		},
 	})
 	@Get('/')
 	async getAllPosts() {
@@ -48,7 +57,9 @@ export class PostsController {
 	}
 
 	@ApiResponse({
-		status: 200, description: 'Get post by id successfully', schema: {
+		status: 200,
+		description: 'Get post by id successfully',
+		schema: {
 			example: new responseData(
 				{
 					_id: '60f9b5b1f4b4c9d8f8f8f8f8',
@@ -58,14 +69,19 @@ export class PostsController {
 					keywords: ['keywords[]'],
 					content: 'Post content',
 					createdAt: '2021-07-23T07:30:09.000Z',
-					updatedAt: '2021-07-23T07:30:09.000Z'
-				}, 200, 'Get post by id successfully')
-		}
+					updatedAt: '2021-07-23T07:30:09.000Z',
+				},
+				200,
+				'Get post by id successfully',
+			),
+		},
 	})
 	@ApiResponse({
-		status: 404, description: 'Post not found', schema: {
-			example: new responseError(404, 'Post not found')
-		}
+		status: 404,
+		description: 'Post not found',
+		schema: {
+			example: new responseError(404, 'Post not found'),
+		},
 	})
 	@invalidIdResponse
 	@Get('/:id')
@@ -74,9 +90,11 @@ export class PostsController {
 	}
 
 	@ApiResponse({
-		status: 201, description: 'Create post successfully', schema: {
-			example: new responseData(null, 201, 'Create post successfully')
-		}
+		status: 201,
+		description: 'Create post successfully',
+		schema: {
+			example: new responseData(null, 201, 'Create post successfully'),
+		},
 	})
 	@permissionErrorResponse
 	@tokenErrorResponse

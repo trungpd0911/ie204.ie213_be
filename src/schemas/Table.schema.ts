@@ -19,7 +19,7 @@ export class Table {
 		],
 	})
 	users: {
-		userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+		userId: { type: mongoose.Schema.Types.ObjectId; ref: 'User' };
 		bookingTime: Date;
 	}[];
 }

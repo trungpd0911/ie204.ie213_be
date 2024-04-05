@@ -20,11 +20,7 @@ export class CreatePostDto {
 	description: string;
 
 	@ApiProperty({
-		example: [
-			'keyword1',
-			'keyword2',
-			'keyword3',
-		]
+		example: ['keyword1', 'keyword2', 'keyword3'],
 	})
 	@IsNotEmpty()
 	@IsString({ each: true })
@@ -40,13 +36,13 @@ export class CreatePostDto {
 			{
 				url: 'image url',
 				publicId: 'image publicId',
-			}
-		]
+			},
+		],
 	})
 	blogImages: [
 		{
 			url: string;
 			publicId: string;
-		}
-	]
+		},
+	];
 }

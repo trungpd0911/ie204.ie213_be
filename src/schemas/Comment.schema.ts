@@ -15,7 +15,7 @@ export class Comment {
 	dishId: Dish;
 
 	@Prop({ default: 0, min: 0, max: 5 })
-	rating: Number;
+	rating: number;
 }
 
 export const CommentSchema = SchemaFactory.createForClass(Comment);

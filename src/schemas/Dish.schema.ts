@@ -8,19 +8,19 @@ export class Dish {
 	dishName: string;
 
 	@Prop({ required: true })
-	dishPrice: Number;
+	dishPrice: number;
 
 	@Prop({ required: true })
 	dishDescription: string;
 
 	@Prop({ required: true, default: 0 })
-	totalOrder: Number;
+	totalOrder: number;
 
 	@Prop({ required: true, type: mongoose.Schema.Types.ObjectId, ref: 'Menu' })
 	menuId: Menu;
 
 	@Prop({ required: true, default: 5 })
-	rating: Number;
+	rating: number;
 
 	@Prop({ required: true })
 	slugName: string;
@@ -35,8 +35,8 @@ export class Dish {
 		],
 	})
 	dishImages: {
-		link: String;
-		id: String;
+		link: string;
+		id: string;
 	}[];
 }
 

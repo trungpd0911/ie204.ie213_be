@@ -5,15 +5,15 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Bill, BillSchema } from '../schemas/Bill.schema';
 
 @Module({
-  imports: [
-    MongooseModule.forFeature([
-      {
-        name: Bill.name,
-        schema: BillSchema,
-      }
-    ])
-  ],
-  controllers: [BillController],
-  providers: [BillService]
+	imports: [
+		MongooseModule.forFeature([
+			{
+				name: Bill.name,
+				schema: BillSchema,
+			},
+		]),
+	],
+	controllers: [BillController],
+	providers: [BillService],
 })
-export class BillModule { }
+export class BillModule {}
