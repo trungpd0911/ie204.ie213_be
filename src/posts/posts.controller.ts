@@ -27,7 +27,7 @@ import {
 @Controller('posts')
 @serverErrorResponse
 export class PostsController {
-	constructor(private postsService: PostsService) {}
+	constructor(private postsService: PostsService) { }
 
 	@ApiResponse({
 		status: 200,
@@ -36,15 +36,28 @@ export class PostsController {
 			example: new responseData(
 				[
 					{
-						_id: '60f9b5b1f4b4c9d8f8f8f8f8',
-						title: 'Post title',
-						header: 'Post header',
-						description: 'Post description',
-						keywords: ['keywords[]'],
-						content: 'Post content',
-						createdAt: '2021-07-23T07:30:09.000Z',
-						updatedAt: '2021-07-23T07:30:09.000Z',
-					},
+						"_id": "id",
+						"title": "Test",
+						"header": "Test",
+						"description": "Testing",
+						"keywords": [
+							"test",
+							"Testing"
+						],
+						"content": "<h2><strong>Hello from testing</strong></h2>",
+						"authorId": "userId",
+						"blogImages": [
+							{
+								"url": "url",
+								"publicId": "publicId",
+								"_id": "id of image"
+							}
+						],
+						"slugName": "test-6610be1d8aedf27056a8f75f",
+						"createdAt": "2024-04-06T03:14:37.678Z",
+						"updatedAt": "2024-04-06T03:14:37.678Z",
+						"__v": 0
+					}
 				],
 				200,
 				'Get all post successfully',
@@ -62,14 +75,27 @@ export class PostsController {
 		schema: {
 			example: new responseData(
 				{
-					_id: '60f9b5b1f4b4c9d8f8f8f8f8',
-					title: 'Post title',
-					header: 'Post header',
-					description: 'Post description',
-					keywords: ['keywords[]'],
-					content: 'Post content',
-					createdAt: '2021-07-23T07:30:09.000Z',
-					updatedAt: '2021-07-23T07:30:09.000Z',
+					"_id": "id",
+					"title": "Test",
+					"header": "Test",
+					"description": "Testing",
+					"keywords": [
+						"test",
+						"Testing"
+					],
+					"content": "<h2><strong>Hello from testing</strong></h2>",
+					"authorId": "userId",
+					"blogImages": [
+						{
+							"url": "url",
+							"publicId": "publicId",
+							"_id": "id of image"
+						}
+					],
+					"slugName": "test-6610be1d8aedf27056a8f75f",
+					"createdAt": "2024-04-06T03:14:37.678Z",
+					"updatedAt": "2024-04-06T03:14:37.678Z",
+					"__v": 0
 				},
 				200,
 				'Get post by id successfully',
@@ -87,6 +113,51 @@ export class PostsController {
 	@Get('/:id')
 	async getPostById(@Param('id') id: string) {
 		return await this.postsService.getPostById(id);
+	}
+
+	@ApiResponse({
+		status: 200,
+		description: 'Get post by id successfully',
+		schema: {
+			example: new responseData(
+				{
+					"_id": "id",
+					"title": "Test",
+					"header": "Test",
+					"description": "Testing",
+					"keywords": [
+						"test",
+						"Testing"
+					],
+					"content": "<h2><strong>Hello from testing</strong></h2>",
+					"authorId": "userId",
+					"blogImages": [
+						{
+							"url": "url",
+							"publicId": "publicId",
+							"_id": "id of image"
+						}
+					],
+					"slugName": "test-6610be1d8aedf27056a8f75f",
+					"createdAt": "2024-04-06T03:14:37.678Z",
+					"updatedAt": "2024-04-06T03:14:37.678Z",
+					"__v": 0
+				},
+				200,
+				'Get post by slug successfully',
+			),
+		},
+	})
+	@ApiResponse({
+		status: 404,
+		description: 'Post not found',
+		schema: {
+			example: new responseError(404, 'Post not found'),
+		},
+	})
+	@Get('/slug/:slugName')
+	async getPostBySlug(@Param('slugName') slugName: string) {
+		return await this.postsService.getPostBySlug(slugName);
 	}
 
 	@ApiResponse({

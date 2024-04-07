@@ -8,7 +8,7 @@ export class Bill {
 	@Prop({ required: true })
 	totalMoney: number;
 
-	@Prop({ required: true })
+	@Prop({ required: true, default: false })
 	billPayed: boolean;
 
 	@Prop({
@@ -29,7 +29,7 @@ export class Bill {
 		type: [
 			{
 				dishId: { type: mongoose.Schema.Types.ObjectId, ref: 'Dish' },
-				dishAmount: Number,
+				dishAmount: { type: Number, default: 1 },
 			},
 		],
 	})

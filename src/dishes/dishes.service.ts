@@ -21,7 +21,7 @@ export class DishesService {
 	constructor(
 		@InjectModel(Dish.name) private dishModel: Model<Dish>,
 		private cloudinaryService: CloudinaryService,
-	) {}
+	) { }
 
 	async createDish(
 		dishImages: Express.Multer.File[],
@@ -59,10 +59,8 @@ export class DishesService {
 			});
 
 			// Create slugname of dish
-			console.log(1);
 			newDish.slugName =
-				configSlug.convertToSlug(newDish.dishName) + '-' + newDish._id;
-			console.log(2);
+				configSlug.convertToSlug(newDish.dishName) + '-' + newDish._id + '.html';
 			const createdDish = await newDish.save();
 
 			// Success response
