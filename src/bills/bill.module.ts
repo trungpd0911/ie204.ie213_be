@@ -21,10 +21,10 @@ import { Discount, DiscountSchema } from '../schemas/Discount.schema';
 			{
 				name: Discount.name,
 				schema: DiscountSchema,
-			}
+			},
 		]),
 	],
 	controllers: [BillController],
 	providers: [BillService],
 })
-export class BillModule { }
+export class BillModule {}

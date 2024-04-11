@@ -15,11 +15,13 @@ import { CloudinaryResponse } from 'src/cloudinary/cloudinary-response';
 import UpdateDishDto from './dto/update-dish.dto';
 import { configSlug } from '../helper/slug.helper';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
+import { Comment } from 'src/schemas/Comment.schema';
 
 @Injectable()
 export class DishesService {
 	constructor(
 		@InjectModel(Dish.name) private dishModel: Model<Dish>,
+		@InjectModel(Comment.name) private commentModel: Model<Comment>,
 		private cloudinaryService: CloudinaryService,
 	) {}
 
@@ -327,6 +329,22 @@ export class DishesService {
 			dish,
 			200,
 			'Get dish by slug name successfully',
+		);
+	}
+
+	async getAllCommentsOfDish(dishId: string) {
+		const comments = await this.commentModel
+			.find({ level: 0, dishId: dishId })
+			.populate('replies');
+
+		if (!comments || comments.length === 0) {
+			throw new NotFoundException('No comments exists');
+		}
+
+		return new responseData(
+			comments,
+			HttpStatus.OK,
+			'Get all comments successfully',
 		);
 	}
 }

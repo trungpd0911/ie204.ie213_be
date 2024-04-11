@@ -7,6 +7,7 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { Dish, DishSchema } from 'src/schemas/Dish.schema';
 import { APP_FILTER } from '@nestjs/core';
 import { HttpExceptionFilter } from '../global/http-exception.filter';
+import { Comment, CommentSchema } from 'src/schemas/Comment.schema';
 
 @Module({
 	imports: [
@@ -16,6 +17,10 @@ import { HttpExceptionFilter } from '../global/http-exception.filter';
 			{
 				name: Dish.name,
 				schema: DishSchema,
+			},
+			{
+				name: Comment.name,
+				schema: CommentSchema,
 			},
 		]),
 	],

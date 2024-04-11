@@ -16,6 +16,14 @@ export class Comment {
 
 	@Prop({ default: 0, min: 0, max: 5 })
 	rating: number;
+
+	@Prop({ required: true, default: 0, min: 0, max: 1 })
+	level: number;
+
+	@Prop([
+		{ default: [], type: mongoose.Schema.Types.ObjectId, ref: 'Comment' },
+	])
+	replies: [mongoose.Types.ObjectId];
 }
 
 export const CommentSchema = SchemaFactory.createForClass(Comment);

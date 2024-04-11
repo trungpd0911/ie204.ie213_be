@@ -80,7 +80,7 @@ export class BillService {
 		}
 
 		try {
-			let unpaidBill = await this.billModel.findOne({
+			const unpaidBill = await this.billModel.findOne({
 				userId,
 				billPayed: false,
 			});
@@ -129,7 +129,7 @@ export class BillService {
 		}
 
 		try {
-			let unpaidBill = await this.billModel.findOne({
+			const unpaidBill = await this.billModel.findOne({
 				userId,
 				billPayed: false,
 			});
@@ -170,7 +170,7 @@ export class BillService {
 
 	async resetCart(userId) {
 		try {
-			let unpaidBill = await this.billModel.findOne({
+			const unpaidBill = await this.billModel.findOne({
 				userId,
 				billPayed: false,
 			});
@@ -224,7 +224,7 @@ export class BillService {
 
 	async checkoutBill(userId: string, discountId: string) {
 		try {
-			let unpaidBill = await this.billModel.findOne({
+			const unpaidBill = await this.billModel.findOne({
 				userId,
 				billPayed: false,
 			});

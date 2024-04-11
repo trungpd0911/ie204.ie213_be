@@ -72,7 +72,7 @@ export class DishesController {
 		},
 	})
 	@CustomSuccessfulApiResponse(
-		'Dish is created successfully',
+		'Dish is created successfully111',
 		HttpStatus.OK,
 		{
 			_id: '660fdc7b70dc7fb614ceaa4b',
@@ -528,7 +528,9 @@ export class DishesController {
 	})
 	@ApiOperation({ summary: '[NO AUTH] Get all reviews of a dish' })
 	@Get('/comments/:dishId')
-	async getAllCommentsOfDish(@Param('dishId') dishId: string) {}
+	async getAllCommentsOfDish(@Param('dishId') dishId: string) {
+		return await this.dishesService.getAllCommentsOfDish(dishId);
+	}
 
 	// Swagger's decorators
 	@ApiOperation({ summary: '[NO AUTH] Get some relative dishes' })
