@@ -12,6 +12,7 @@ import { DishesModule } from './dishes/dishes.module';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { AppLoggerMiddleware } from './middlewares/logging-middleware';
 import { MenusModule } from './menus/menus.module';
+import { CommentsModule } from './comments/comments.module';
 
 @Module({
 	imports: [
@@ -50,6 +51,7 @@ import { MenusModule } from './menus/menus.module';
 		CloudinaryModule,
 		DishesModule,
 		MenusModule,
+		CommentsModule,
 	],
 	controllers: [],
 	providers: [],

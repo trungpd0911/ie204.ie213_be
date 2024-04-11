@@ -1,4 +1,8 @@
-import { HttpException, Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+	HttpException,
+	Injectable,
+	InternalServerErrorException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { Post } from '../schemas/Post.schema';
@@ -8,7 +12,7 @@ import { responseData } from '../global/globalClass';
 
 @Injectable()
 export class PostsService {
-	constructor(@InjectModel(Post.name) private postModel: Model<Post>) { }
+	constructor(@InjectModel(Post.name) private postModel: Model<Post>) {}
 
 	async getAllPosts() {
 		try {
@@ -44,7 +48,11 @@ export class PostsService {
 			if (!postBySlug) {
 				throw new HttpException('Post not found', 404);
 			}
-			return new responseData(postBySlug, 200, 'Get post by slug successfully');
+			return new responseData(
+				postBySlug,
+				200,
+				'Get post by slug successfully',
+			);
 		} catch (error) {
 			console.log(error);
 			throw new InternalServerErrorException(error);
@@ -65,7 +73,8 @@ export class PostsService {
 			const slugName =
 				configSlug.convertToSlug(createPostDto.title) +
 				'-' +
-				newPost._id + '.html';
+				newPost._id +
+				'.html';
 			newPost.slugName = slugName;
 			await newPost.save();
 			return new responseData(null, 201, 'Post created successfully');

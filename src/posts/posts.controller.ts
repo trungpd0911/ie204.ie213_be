@@ -27,7 +27,7 @@ import {
 @Controller('posts')
 @serverErrorResponse
 export class PostsController {
-	constructor(private postsService: PostsService) { }
+	constructor(private postsService: PostsService) {}
 
 	@ApiResponse({
 		status: 200,
@@ -36,28 +36,25 @@ export class PostsController {
 			example: new responseData(
 				[
 					{
-						"_id": "id",
-						"title": "Test",
-						"header": "Test",
-						"description": "Testing",
-						"keywords": [
-							"test",
-							"Testing"
-						],
-						"content": "<h2><strong>Hello from testing</strong></h2>",
-						"authorId": "userId",
-						"blogImages": [
+						_id: 'id',
+						title: 'Test',
+						header: 'Test',
+						description: 'Testing',
+						keywords: ['test', 'Testing'],
+						content: '<h2><strong>Hello from testing</strong></h2>',
+						authorId: 'userId',
+						blogImages: [
 							{
-								"url": "url",
-								"publicId": "publicId",
-								"_id": "id of image"
-							}
+								url: 'url',
+								publicId: 'publicId',
+								_id: 'id of image',
+							},
 						],
-						"slugName": "test-6610be1d8aedf27056a8f75f",
-						"createdAt": "2024-04-06T03:14:37.678Z",
-						"updatedAt": "2024-04-06T03:14:37.678Z",
-						"__v": 0
-					}
+						slugName: 'test-6610be1d8aedf27056a8f75f',
+						createdAt: '2024-04-06T03:14:37.678Z',
+						updatedAt: '2024-04-06T03:14:37.678Z',
+						__v: 0,
+					},
 				],
 				200,
 				'Get all post successfully',
@@ -75,27 +72,24 @@ export class PostsController {
 		schema: {
 			example: new responseData(
 				{
-					"_id": "id",
-					"title": "Test",
-					"header": "Test",
-					"description": "Testing",
-					"keywords": [
-						"test",
-						"Testing"
-					],
-					"content": "<h2><strong>Hello from testing</strong></h2>",
-					"authorId": "userId",
-					"blogImages": [
+					_id: 'id',
+					title: 'Test',
+					header: 'Test',
+					description: 'Testing',
+					keywords: ['test', 'Testing'],
+					content: '<h2><strong>Hello from testing</strong></h2>',
+					authorId: 'userId',
+					blogImages: [
 						{
-							"url": "url",
-							"publicId": "publicId",
-							"_id": "id of image"
-						}
+							url: 'url',
+							publicId: 'publicId',
+							_id: 'id of image',
+						},
 					],
-					"slugName": "test-6610be1d8aedf27056a8f75f",
-					"createdAt": "2024-04-06T03:14:37.678Z",
-					"updatedAt": "2024-04-06T03:14:37.678Z",
-					"__v": 0
+					slugName: 'test-6610be1d8aedf27056a8f75f',
+					createdAt: '2024-04-06T03:14:37.678Z',
+					updatedAt: '2024-04-06T03:14:37.678Z',
+					__v: 0,
 				},
 				200,
 				'Get post by id successfully',
@@ -121,27 +115,24 @@ export class PostsController {
 		schema: {
 			example: new responseData(
 				{
-					"_id": "id",
-					"title": "Test",
-					"header": "Test",
-					"description": "Testing",
-					"keywords": [
-						"test",
-						"Testing"
-					],
-					"content": "<h2><strong>Hello from testing</strong></h2>",
-					"authorId": "userId",
-					"blogImages": [
+					_id: 'id',
+					title: 'Test',
+					header: 'Test',
+					description: 'Testing',
+					keywords: ['test', 'Testing'],
+					content: '<h2><strong>Hello from testing</strong></h2>',
+					authorId: 'userId',
+					blogImages: [
 						{
-							"url": "url",
-							"publicId": "publicId",
-							"_id": "id of image"
-						}
+							url: 'url',
+							publicId: 'publicId',
+							_id: 'id of image',
+						},
 					],
-					"slugName": "test-6610be1d8aedf27056a8f75f",
-					"createdAt": "2024-04-06T03:14:37.678Z",
-					"updatedAt": "2024-04-06T03:14:37.678Z",
-					"__v": 0
+					slugName: 'test-6610be1d8aedf27056a8f75f',
+					createdAt: '2024-04-06T03:14:37.678Z',
+					updatedAt: '2024-04-06T03:14:37.678Z',
+					__v: 0,
 				},
 				200,
 				'Get post by slug successfully',

@@ -10,9 +10,7 @@ import { HttpExceptionFilter } from '../global/http-exception.filter';
 
 @Module({
 	imports: [
-		MulterModule.register({
-			// dest: '/dish-files-upload',
-		}),
+		MulterModule.register(),
 		CloudinaryModule,
 		MongooseModule.forFeature([
 			{
