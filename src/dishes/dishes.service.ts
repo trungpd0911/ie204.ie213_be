@@ -15,30 +15,29 @@ import { CloudinaryResponse } from 'src/cloudinary/cloudinary-response';
 import UpdateDishDto from './dto/update-dish.dto';
 import { configSlug } from '../helper/slug.helper';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
+import { Comment } from 'src/schemas/Comment.schema';
 
 @Injectable()
 export class DishesService {
 	constructor(
 		@InjectModel(Dish.name) private dishModel: Model<Dish>,
+		@InjectModel(Comment.name) private commentModel: Model<Comment>,
 		private cloudinaryService: CloudinaryService,
-	) { }
+	) {}
 
 	async createDish(
 		dishImages: Express.Multer.File[],
 		createDishDto: CreateDishDto,
 	) {
-		try {
-			// Check if the dish name existed
-			const isExisted = await this.dishModel.findOne({
-				dishName: createDishDto.dishName,
-			});
-			if (isExisted) {
-				throw new HttpException(
-					'This dish name has already existed',
-					400,
-				);
-			}
+		// Check if the dish name existed
+		const isExisted = await this.dishModel.findOne({
+			dishName: createDishDto.dishName,
+		});
+		if (isExisted) {
+			throw new BadRequestException('This dish name has already existed');
+		}
 
+		try {
 			// Create dish images in cloudinary
 			let savedImages: CloudinaryResponse[] = [];
 			if (dishImages) {
@@ -60,7 +59,10 @@ export class DishesService {
 
 			// Create slugname of dish
 			newDish.slugName =
-				configSlug.convertToSlug(newDish.dishName) + '-' + newDish._id + '.html';
+				configSlug.convertToSlug(newDish.dishName) +
+				'-' +
+				newDish._id +
+				'.html';
 			const createdDish = await newDish.save();
 
 			// Success response
@@ -75,16 +77,12 @@ export class DishesService {
 	}
 
 	async getAllDishes() {
-		try {
-			const dishes = await this.dishModel.find();
+		const dishes = await this.dishModel.find();
 
-			if (dishes.length == 0) {
-				throw new NotFoundException('No dish found');
-			}
-			return new responseData(dishes, 200, 'Get all dishes successfully');
-		} catch (e) {
-			throw new HttpException(e, 500);
+		if (dishes.length == 0) {
+			throw new NotFoundException('No dish found');
 		}
+		return new responseData(dishes, 200, 'Get all dishes successfully');
 	}
 
 	async getDishById(id: string) {
@@ -92,18 +90,14 @@ export class DishesService {
 			throw new BadRequestException('Invalid id');
 		}
 
-		try {
-			const dish = await this.dishModel.findById(id);
+		const dish = await this.dishModel.findById(id);
 
-			// Check if dish exists
-			if (!dish) {
-				throw new NotFoundException('Dish not found');
-			}
-
-			return new responseData(dish, 200, 'Get dish by id successfully');
-		} catch (e) {
-			throw new InternalServerErrorException(e);
+		// Check if dish exists
+		if (!dish) {
+			throw new NotFoundException('Dish not found');
 		}
+
+		return new responseData(dish, 200, 'Get dish by id successfully');
 	}
 
 	async updateDishById(id: string, updateDishDto: UpdateDishDto) {
@@ -111,12 +105,12 @@ export class DishesService {
 			throw new BadRequestException('Invalid id');
 		}
 
-		try {
-			const dish = await this.dishModel.findById(id);
-			if (dish == null) {
-				throw new NotFoundException('Dish not found');
-			}
+		const dish = await this.dishModel.findById(id);
+		if (dish == null) {
+			throw new NotFoundException('Dish not found');
+		}
 
+		try {
 			const updatedDish = await this.dishModel.findByIdAndUpdate(
 				id,
 				updateDishDto,
@@ -139,12 +133,12 @@ export class DishesService {
 			throw new BadRequestException('Invalid id');
 		}
 
-		try {
-			const dish = await this.dishModel.findById(id);
-			if (dish == null) {
-				throw new NotFoundException('Dish not found');
-			}
+		const dish = await this.dishModel.findById(id);
+		if (dish == null) {
+			throw new NotFoundException('Dish not found');
+		}
 
+		try {
 			// Remove all images of the dish
 			for (const image of dish.dishImages) {
 				try {
@@ -172,24 +166,23 @@ export class DishesService {
 			throw new BadRequestException('Invalid keyword parameter');
 		}
 
-		try {
-			// Ignore case sensitive
-			const dishes = await this.dishModel.find({
-				dishName: { $regex: '.*' + keyword + '.*' },
-			});
+		const keywordArray = keyword.split(' ');
+		const regexToSearch = '.*' + keywordArray.join('.*') + '.*';
 
-			if (dishes === null || dishes.length === 0) {
-				throw new NotFoundException('No dishes found');
-			}
+		// Ignore case sensitive
+		const dishes = await this.dishModel.find({
+			dishName: { $regex: regexToSearch },
+		});
 
-			return new responseData(
-				dishes,
-				HttpStatus.OK,
-				'Search dishes by name successfully',
-			);
-		} catch (e) {
-			throw new InternalServerErrorException(e);
+		if (dishes === null || dishes.length === 0) {
+			throw new NotFoundException('No dishes found');
 		}
+
+		return new responseData(
+			dishes,
+			HttpStatus.OK,
+			'Search dishes by name successfully',
+		);
 	}
 
 	async getAllDishesWithPagination(page: number, perPage: number) {
@@ -200,35 +193,31 @@ export class DishesService {
 			);
 		}
 
-		try {
-			// Find with pagination
-			const dishes = await this.dishModel
-				.find()
-				.skip(perPage * (page - 1))
-				.limit(perPage);
+		// Find with pagination
+		const dishes = await this.dishModel
+			.find()
+			.skip(perPage * (page - 1))
+			.limit(perPage);
 
-			if (dishes.length == 0) {
-				throw new NotFoundException('No dish found');
-			}
-
-			// Check if this is the last page
-			const totalDishes = await this.dishModel.countDocuments();
-			const totalPages = Math.ceil(totalDishes / perPage);
-			const isLastPage = page >= totalPages;
-
-			const data = {
-				dishes: dishes,
-				isLastPage: isLastPage,
-			};
-
-			return new responseData(
-				data,
-				200,
-				'Get all dishes with pagination successfully',
-			);
-		} catch (e) {
-			throw new HttpException(e, 500);
+		if (dishes.length == 0) {
+			throw new NotFoundException('No dish found');
 		}
+
+		// Check if this is the last page
+		const totalDishes = await this.dishModel.countDocuments();
+		const totalPages = Math.ceil(totalDishes / perPage);
+		const isLastPage = page >= totalPages;
+
+		const data = {
+			dishes: dishes,
+			isLastPage: isLastPage,
+		};
+
+		return new responseData(
+			data,
+			200,
+			'Get all dishes with pagination successfully',
+		);
 	}
 
 	async getDishesByPriceAndMenuIdWithPagination(
@@ -251,50 +240,46 @@ export class DishesService {
 			);
 		}
 
-		try {
-			// Build filter using price range and menu ID
-			const DEFAULT_MAX_PRICE = 1000000000;
-			const DAFAULT_MIN_PRICE = 0;
+		// Build filter using price range and menu ID
+		const DEFAULT_MAX_PRICE = 1000000000;
+		const DAFAULT_MIN_PRICE = 0;
 
-			const filter = {
-				dishPrice: {
-					$lte: maxPrice || DEFAULT_MAX_PRICE,
-					$gte: minPrice || DAFAULT_MIN_PRICE,
-				},
-			};
+		const filter = {
+			dishPrice: {
+				$lte: maxPrice || DEFAULT_MAX_PRICE,
+				$gte: minPrice || DAFAULT_MIN_PRICE,
+			},
+		};
 
-			if (menuId) {
-				Object.assign(filter, { menuId: menuId });
-			}
-
-			// Search result
-			const dishes = await this.dishModel
-				.find(filter)
-				.skip(perPage * (page - 1))
-				.limit(perPage);
-
-			if (dishes === null || dishes.length === 0) {
-				throw new NotFoundException('No dishes found');
-			}
-
-			// Check if this is the last page
-			const totalDishes = await this.dishModel.countDocuments();
-			const totalPages = Math.ceil(totalDishes / perPage);
-			const isLastPage = page >= totalPages;
-
-			const data = {
-				dishes: dishes,
-				isLastPage: isLastPage,
-			};
-
-			return new responseData(
-				data,
-				HttpStatus.OK,
-				'Filter dishes by price and memu ID successfully',
-			);
-		} catch (e) {
-			throw new InternalServerErrorException(e);
+		if (menuId) {
+			Object.assign(filter, { menuId: menuId });
 		}
+
+		// Search result
+		const dishes = await this.dishModel
+			.find(filter)
+			.skip(perPage * (page - 1))
+			.limit(perPage);
+
+		if (dishes === null || dishes.length === 0) {
+			throw new NotFoundException('No dishes found');
+		}
+
+		// Check if this is the last page
+		const totalDishes = await this.dishModel.countDocuments();
+		const totalPages = Math.ceil(totalDishes / perPage);
+		const isLastPage = page >= totalPages;
+
+		const data = {
+			dishes: dishes,
+			isLastPage: isLastPage,
+		};
+
+		return new responseData(
+			data,
+			HttpStatus.OK,
+			'Filter dishes by price and memu ID successfully',
+		);
 	}
 
 	// STRATEGY: Random a number of dishes in the same menu
@@ -307,12 +292,12 @@ export class DishesService {
 			throw new BadRequestException('Invalid number parameter');
 		}
 
-		try {
-			const requestedDish = await this.dishModel.findById(id);
-			if (!requestedDish) {
-				throw new NotFoundException('Dish not found');
-			}
+		const requestedDish = await this.dishModel.findById(id);
+		if (!requestedDish) {
+			throw new NotFoundException('Dish not found');
+		}
 
+		try {
 			// Get random dishes
 			const menuId = requestedDish.menuId;
 			const randomDishes = await this.dishModel.aggregate([
@@ -328,5 +313,42 @@ export class DishesService {
 		} catch (e) {
 			throw new InternalServerErrorException(e);
 		}
+	}
+
+	async getDishBySlugName(slug: string) {
+		const dish = await this.dishModel.findOne({
+			slugName: slug.trim(),
+		});
+
+		// Check if dish exists
+		if (!dish) {
+			throw new NotFoundException('Dish not found');
+		}
+
+		return new responseData(
+			dish,
+			200,
+			'Get dish by slug name successfully',
+		);
+	}
+
+	async getAllCommentsOfDish(dishId: string) {
+		if (!Types.ObjectId.isValid(dishId)) {
+			throw new BadRequestException('Invalid dish id');
+		}
+
+		const comments = await this.commentModel
+			.find({ level: 0, dishId: dishId })
+			.populate('replies');
+
+		if (!comments || comments.length === 0) {
+			throw new NotFoundException('No comments exists');
+		}
+
+		return new responseData(
+			comments,
+			HttpStatus.OK,
+			'Get all comments successfully',
+		);
 	}
 }

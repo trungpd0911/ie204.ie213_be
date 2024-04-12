@@ -45,7 +45,7 @@ export class DishesController {
 
 	// Admin role
 	// Swagger's decorators
-	@ApiOperation({ summary: 'Create a dish' })
+	@ApiOperation({ summary: '[ADMIN] Create a dish' })
 	@ApiConsumes('multipart/form-data')
 	@ApiBody({
 		schema: {
@@ -72,7 +72,7 @@ export class DishesController {
 		},
 	})
 	@CustomSuccessfulApiResponse(
-		'Dish is created successfully',
+		'Dish is created successfully111',
 		HttpStatus.OK,
 		{
 			_id: '660fdc7b70dc7fb614ceaa4b',
@@ -119,7 +119,7 @@ export class DishesController {
 	}
 
 	// Swagger's decorators
-	@ApiOperation({ summary: 'Update a dish by ID' })
+	@ApiOperation({ summary: '[NO AUTH] Update a dish by ID' })
 	@ApiParam({
 		name: 'id',
 		required: true,
@@ -174,7 +174,7 @@ export class DishesController {
 	}
 
 	// Swagger's decorators
-	@ApiOperation({ summary: 'Delete a dish by ID' })
+	@ApiOperation({ summary: '[ADMIN] Delete a dish by ID' })
 	@ApiParam({
 		name: 'id',
 		required: true,
@@ -202,7 +202,7 @@ export class DishesController {
 	// User role
 
 	// Swagger decorators
-	@ApiOperation({ summary: 'Get all dishes' })
+	@ApiOperation({ summary: '[NO AUTH] Get all dishes' })
 	@CustomSuccessfulApiResponse('Get all dishes successfully', HttpStatus.OK, [
 		{
 			_id: '660fdc7b70dc7fb614ceaa4b',
@@ -239,7 +239,7 @@ export class DishesController {
 	}
 
 	// Swagger decorators
-	@ApiOperation({ summary: 'Get all dishes with pagination' })
+	@ApiOperation({ summary: '[NO AUTH] Get all dishes with pagination' })
 	@ApiQuery({
 		name: 'page',
 		required: true,
@@ -303,7 +303,7 @@ export class DishesController {
 	}
 
 	// Swagger decorators
-	@ApiOperation({ summary: 'Filter dishes by price and memu ID' })
+	@ApiOperation({ summary: '[NO AUTH] Filter dishes by price and memu ID' })
 	@ApiQuery({ name: 'minPrice', required: false, description: 'Min price' })
 	@ApiQuery({ name: 'maxPrice', required: false, description: 'Max price' })
 	@ApiQuery({
@@ -380,7 +380,95 @@ export class DishesController {
 	}
 
 	// Swagger's decorators
-	@ApiOperation({ summary: 'Search dishes by name' })
+	@ApiOperation({ summary: '[NO AUTH] Get dish by id' })
+	@ApiParam({
+		name: 'id',
+		required: true,
+		description: 'The ID of the dish want to find',
+	})
+	@CustomSuccessfulApiResponse('Get dish by id successfully', HttpStatus.OK, {
+		_id: '660fdc7b70dc7fb614ceaa4b',
+		dishName: 'Tra sua do vai lin',
+		dishPrice: 20000,
+		dishDescription: 'Khong co gi ngon',
+		totalOrder: 0,
+		menuId: '66083097c11b247adbd84f2a',
+		rating: 5,
+		dishImages: [
+			{
+				link: 'http://res.cloudinary.com/ddexbqgmg/image/upload/v1712315515/bepUIT-dishImages/lmskq9koz19kmvcz2uyt.jpg',
+				id: 'bepUIT-dishImages/lmskq9koz19kmvcz2uyt',
+				_id: '660fdc7b70dc7fb614ceaa4c',
+			},
+			{
+				link: 'http://res.cloudinary.com/ddexbqgmg/image/upload/v1712315515/bepUIT-dishImages/iwuxrcc5wtgzjkasl7v3.jpg',
+				id: 'bepUIT-dishImages/iwuxrcc5wtgzjkasl7v3',
+				_id: '660fdc7b70dc7fb614ceaa4d',
+			},
+		],
+		slugName:
+			'tra-sua-tran-chau-duong-den-nhieu-duong-den-660fdc7b70dc7fb614ceaa4b',
+		createdAt: '2024-04-05T11:11:55.702Z',
+		updatedAt: '2024-04-05T14:24:40.127Z',
+		__v: 0,
+	})
+	@CustomInternalServerErrorApiResponse('Internal server error')
+	@CustomBadRequestApiResponse("Invalid dish's ID")
+	@CustomNotFoundApiResponse('No dish found')
+	// Controller's decorators
+	@Get('/id/:id')
+	async getDishById(@Param('id') id: string) {
+		return await this.dishesService.getDishById(id);
+	}
+
+	// Swagger's decorators
+	@ApiOperation({ summary: '[NO AUTH] Get dish by slugname' })
+	@ApiParam({
+		name: 'slug',
+		required: true,
+		description: 'The slug name of the dish want to find',
+	})
+	@CustomSuccessfulApiResponse(
+		'Get dish by slug name successfully',
+		HttpStatus.OK,
+		{
+			_id: '660fdc7b70dc7fb614ceaa4b',
+			dishName: 'Tra sua do vai lin',
+			dishPrice: 20000,
+			dishDescription: 'Khong co gi ngon',
+			totalOrder: 0,
+			menuId: '66083097c11b247adbd84f2a',
+			rating: 5,
+			dishImages: [
+				{
+					link: 'http://res.cloudinary.com/ddexbqgmg/image/upload/v1712315515/bepUIT-dishImages/lmskq9koz19kmvcz2uyt.jpg',
+					id: 'bepUIT-dishImages/lmskq9koz19kmvcz2uyt',
+					_id: '660fdc7b70dc7fb614ceaa4c',
+				},
+				{
+					link: 'http://res.cloudinary.com/ddexbqgmg/image/upload/v1712315515/bepUIT-dishImages/iwuxrcc5wtgzjkasl7v3.jpg',
+					id: 'bepUIT-dishImages/iwuxrcc5wtgzjkasl7v3',
+					_id: '660fdc7b70dc7fb614ceaa4d',
+				},
+			],
+			slugName:
+				'tra-sua-tran-chau-duong-den-nhieu-duong-den-660fdc7b70dc7fb614ceaa4b',
+			createdAt: '2024-04-05T11:11:55.702Z',
+			updatedAt: '2024-04-05T14:24:40.127Z',
+			__v: 0,
+		},
+	)
+	@CustomInternalServerErrorApiResponse('Internal server error')
+	@CustomBadRequestApiResponse("Invalid dish's ID")
+	@CustomNotFoundApiResponse('No dish found')
+	// Controller's decorators
+	@Get('/slug/:slug')
+	async getDishBySlugName(@Param('slug') slug: string) {
+		return await this.dishesService.getDishBySlugName(slug);
+	}
+
+	// Swagger's decorators
+	@ApiOperation({ summary: '[NO AUTH] Search dishes by name' })
 	@ApiQuery({
 		name: 'keyword',
 		required: true,
@@ -421,7 +509,7 @@ export class DishesController {
 			isLastPage: true,
 		},
 	)
-	@CustomNotFoundApiResponse('No dish found')
+	@CustomNotFoundApiResponse('[NO AUTH] No dish found')
 	@CustomBadRequestApiResponse(
 		'Invalid params: page and perPage must be >= 1',
 	)
@@ -429,22 +517,65 @@ export class DishesController {
 	// Controllers's decorators
 	@Get('/search')
 	async searchDishesByName(@Query('keyword') keyword: string) {
-		console.log(keyword);
 		return await this.dishesService.searchDishesByName(keyword);
 	}
 
-	// TODO
-	@ApiOperation({
-		summary: 'This endpoint is currently under development',
-		description:
-			'Detailed information about the endpoint will be available once development is complete.',
-	})
-	@ApiOperation({ summary: 'Get all reviews of a dish' })
+	// Swagger's decorators
+	@ApiOperation({ summary: '[NO AUTH] Get all comments of a dish' })
+	@CustomSuccessfulApiResponse(
+		'Get all comments of dish successfully',
+		HttpStatus.OK,
+		[
+			{
+				_id: '66180b351effbd8d0ebdae56',
+				content: 'Tra sua rat ngon',
+				userId: '66082c2b92de5d775491d6c5',
+				dishId: '660fdc7b70dc7fb614ceaa4b',
+				rating: 5,
+				level: 0,
+				replies: [
+					{
+						_id: '66180b511effbd8d0ebdae5b',
+						content: 'Eo ngon dau',
+						userId: '66082c2b92de5d775491d6c5',
+						dishId: '660fdc7b70dc7fb614ceaa4b',
+						rating: 0,
+						level: 1,
+						replies: [],
+						createdAt: '2024-04-11T16:09:53.530Z',
+						updatedAt: '2024-04-11T16:09:53.530Z',
+						__v: 0,
+					},
+					{
+						_id: '66180eb80c5544c6e06c1f28',
+						content: 'Toi thi thay rat ngon',
+						userId: '66082c2b92de5d775491d6c5',
+						dishId: '660fdc7b70dc7fb614ceaa4b',
+						rating: 0,
+						level: 1,
+						replies: [],
+						createdAt: '2024-04-11T16:24:24.918Z',
+						updatedAt: '2024-04-11T16:24:24.918Z',
+						__v: 0,
+					},
+				],
+				createdAt: '2024-04-11T16:09:25.902Z',
+				updatedAt: '2024-04-11T16:24:24.814Z',
+				__v: 2,
+			},
+		],
+	)
+	@CustomBadRequestApiResponse('Invalid dish id')
+	@CustomNotFoundApiResponse('No comments exists')
+	@CustomInternalServerErrorApiResponse('Internal server error')
+	// Controller's decorators
 	@Get('/comments/:dishId')
-	async getAllCommentsOfDish(@Param('dishId') dishId: string) {}
+	async getAllCommentsOfDish(@Param('dishId') dishId: string) {
+		return await this.dishesService.getAllCommentsOfDish(dishId);
+	}
 
 	// Swagger's decorators
-	@ApiOperation({ summary: 'Get some relative dishes' })
+	@ApiOperation({ summary: '[NO AUTH] Get some relative dishes' })
 	@ApiParam({ name: 'id', required: true, description: 'The ID of the dish' })
 	@ApiQuery({
 		name: 'number',
@@ -496,48 +627,5 @@ export class DishesController {
 		@Query('number') number: number,
 	) {
 		return await this.dishesService.getSomeRelativeDishes(id, number);
-	}
-
-	// Place this route at the bottom to prioritize other routes (search, filter, ...)
-	// Swagger's decorators
-	@ApiOperation({ summary: 'Get dish by id' })
-	@ApiParam({
-		name: 'id',
-		required: true,
-		description: 'The ID of the dish want to find',
-	})
-	@CustomSuccessfulApiResponse('Get dish by id successfully', HttpStatus.OK, {
-		_id: '660fdc7b70dc7fb614ceaa4b',
-		dishName: 'Tra sua do vai lin',
-		dishPrice: 20000,
-		dishDescription: 'Khong co gi ngon',
-		totalOrder: 0,
-		menuId: '66083097c11b247adbd84f2a',
-		rating: 5,
-		dishImages: [
-			{
-				link: 'http://res.cloudinary.com/ddexbqgmg/image/upload/v1712315515/bepUIT-dishImages/lmskq9koz19kmvcz2uyt.jpg',
-				id: 'bepUIT-dishImages/lmskq9koz19kmvcz2uyt',
-				_id: '660fdc7b70dc7fb614ceaa4c',
-			},
-			{
-				link: 'http://res.cloudinary.com/ddexbqgmg/image/upload/v1712315515/bepUIT-dishImages/iwuxrcc5wtgzjkasl7v3.jpg',
-				id: 'bepUIT-dishImages/iwuxrcc5wtgzjkasl7v3',
-				_id: '660fdc7b70dc7fb614ceaa4d',
-			},
-		],
-		slugName:
-			'tra-sua-tran-chau-duong-den-nhieu-duong-den-660fdc7b70dc7fb614ceaa4b',
-		createdAt: '2024-04-05T11:11:55.702Z',
-		updatedAt: '2024-04-05T14:24:40.127Z',
-		__v: 0,
-	})
-	@CustomInternalServerErrorApiResponse('Internal server error')
-	@CustomBadRequestApiResponse("Invalid dish's ID")
-	@CustomNotFoundApiResponse('No dish found')
-	// Controller's decorators
-	@Get('/:id')
-	async getDishById(@Param('id') id: string) {
-		return await this.dishesService.getDishById(id);
 	}
 }

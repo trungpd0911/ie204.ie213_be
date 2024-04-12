@@ -76,15 +76,7 @@ export function CustomSuccessfulApiResponse(
 		status: status,
 		description: message,
 		schema: {
-			example: new responseData(
-				{
-					data: data,
-					statusCode: status,
-					message: message,
-				},
-				status,
-				message,
-			),
+			example: new responseData(data, status, message),
 		},
 	});
 }

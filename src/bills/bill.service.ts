@@ -12,14 +12,19 @@ export class BillService {
 		@InjectModel(Bill.name) private billModel: Model<Bill>,
 		@InjectModel(Dish.name) private dishModel: Model<Dish>,
 		@InjectModel(Discount.name) private discountModel: Model<Discount>,
-	) { }
+	) {}
 
 	async getAllBills() {
 		try {
 			// select username, id from users
-			const allBills = await this.billModel.find().populate('userId', 'username');
-			return new responseData(allBills, 200, 'get all bills successfully');
-
+			const allBills = await this.billModel
+				.find()
+				.populate('userId', 'username');
+			return new responseData(
+				allBills,
+				200,
+				'get all bills successfully',
+			);
 		} catch (error) {
 			console.log(error);
 			throw new InternalServerErrorException(error);
@@ -33,7 +38,10 @@ export class BillService {
 		}
 
 		try {
-			let unpaidBill = await this.billModel.findOne({ userId, billPayed: false });
+			let unpaidBill = await this.billModel.findOne({
+				userId,
+				billPayed: false,
+			});
 			if (!unpaidBill) {
 				unpaidBill = await this.billModel.create({
 					userId: userId,
@@ -43,10 +51,11 @@ export class BillService {
 				});
 				// add dish to bill
 				unpaidBill.billDishes.push({ dishId, dishAmount: 1 });
-			}
-			else {
+			} else {
 				// check if dish is already in the bill
-				const dishExist = unpaidBill.billDishes.find((dish) => dish.dishId == dishId);
+				const dishExist = unpaidBill.billDishes.find(
+					(dish) => dish.dishId == dishId,
+				);
 				if (dishExist) {
 					dishExist.dishAmount += 1;
 				} else {
@@ -71,21 +80,30 @@ export class BillService {
 		}
 
 		try {
-			let unpaidBill = await this.billModel.findOne({ userId, billPayed: false });
+			const unpaidBill = await this.billModel.findOne({
+				userId,
+				billPayed: false,
+			});
 			if (!unpaidBill) {
 				return new responseError(404, 'bill is not exist');
-			}
-			else {
+			} else {
 				// check if dish is already in the bill
-				const dishExist = unpaidBill.billDishes.find((dish) => dish.dishId == dishId);
+				const dishExist = unpaidBill.billDishes.find(
+					(dish) => dish.dishId == dishId,
+				);
 				if (!dishExist) {
-					return new responseError(404, 'dish is not exist in the bill');
+					return new responseError(
+						404,
+						'dish is not exist in the bill',
+					);
 				} else {
 					if (dishExist.dishAmount > 1) {
 						dishExist.dishAmount -= 1;
 					} else {
-						// remove dish from bill if dishAmount = 1 
-						unpaidBill.billDishes = unpaidBill.billDishes.filter((dish) => dish.dishId != dishId);
+						// remove dish from bill if dishAmount = 1
+						unpaidBill.billDishes = unpaidBill.billDishes.filter(
+							(dish) => dish.dishId != dishId,
+						);
 					}
 				}
 			}
@@ -93,7 +111,11 @@ export class BillService {
 			const dishPrice = await this.dishModel.findById(dishId);
 			unpaidBill.totalMoney -= dishPrice.dishPrice;
 			await unpaidBill.save();
-			return new responseData(null, 200, 'subtract dish from cart successfully');
+			return new responseData(
+				null,
+				200,
+				'subtract dish from cart successfully',
+			);
 		} catch (error) {
 			console.log(error);
 			throw new InternalServerErrorException(error);
@@ -107,25 +129,39 @@ export class BillService {
 		}
 
 		try {
-			let unpaidBill = await this.billModel.findOne({ userId, billPayed: false });
+			const unpaidBill = await this.billModel.findOne({
+				userId,
+				billPayed: false,
+			});
 			if (!unpaidBill) {
 				return new responseError(404, 'bill is not exist');
-			}
-			else {
+			} else {
 				// check if dish is already in the bill
-				const dishExist = unpaidBill.billDishes.find((dish) => dish.dishId == dishId);
+				const dishExist = unpaidBill.billDishes.find(
+					(dish) => dish.dishId == dishId,
+				);
 				if (!dishExist) {
-					return new responseError(404, 'dish is not exist in the bill');
+					return new responseError(
+						404,
+						'dish is not exist in the bill',
+					);
 				} else {
 					const dishPrice = await this.dishModel.findById(dishId);
 					// update totalMoney
-					unpaidBill.totalMoney -= dishPrice.dishPrice * dishExist.dishAmount;
+					unpaidBill.totalMoney -=
+						dishPrice.dishPrice * dishExist.dishAmount;
 					// remove dish from bill
-					unpaidBill.billDishes = unpaidBill.billDishes.filter((dish) => dish.dishId != dishId);
+					unpaidBill.billDishes = unpaidBill.billDishes.filter(
+						(dish) => dish.dishId != dishId,
+					);
 				}
 			}
 			await unpaidBill.save();
-			return new responseData(null, 200, 'remove dish from cart successfully');
+			return new responseData(
+				null,
+				200,
+				'remove dish from cart successfully',
+			);
 		} catch (error) {
 			console.log(error);
 			throw new InternalServerErrorException(error);
@@ -134,11 +170,13 @@ export class BillService {
 
 	async resetCart(userId) {
 		try {
-			let unpaidBill = await this.billModel.findOne({ userId, billPayed: false });
+			const unpaidBill = await this.billModel.findOne({
+				userId,
+				billPayed: false,
+			});
 			if (!unpaidBill) {
 				return new responseError(404, 'bill is not exist');
-			}
-			else {
+			} else {
 				unpaidBill.totalMoney = 0;
 				unpaidBill.billDishes = [];
 			}
@@ -152,7 +190,9 @@ export class BillService {
 
 	async getAllDishesInCart(userId: string) {
 		try {
-			const unpaidBill = await this.billModel.findOne({ userId, billPayed: false }).populate('billDishes.dishId');
+			const unpaidBill = await this.billModel
+				.findOne({ userId, billPayed: false })
+				.populate('billDishes.dishId');
 			if (!unpaidBill) {
 				return new responseError(404, 'bill is not exist');
 			}
@@ -161,13 +201,21 @@ export class BillService {
 			const dishes = await Promise.all(
 				allDishes.map(async (dish) => {
 					// only select dishName, dishPrice, dishImages, _id from dishModel
-					const dishDetail = await this.dishModel.findById(dish.dishId, 'dishName dishPrice dishImages');
+					const dishDetail = await this.dishModel.findById(
+						dish.dishId,
+						'dishName dishPrice dishImages',
+					);
 					return {
 						...dishDetail.toObject(),
 						dishAmount: dish.dishAmount,
 					};
-				}));
-			return new responseData(dishes, 200, 'get all dishes in cart successfully');
+				}),
+			);
+			return new responseData(
+				dishes,
+				200,
+				'get all dishes in cart successfully',
+			);
 		} catch (error) {
 			console.log(error);
 			throw new InternalServerErrorException(error);
@@ -176,7 +224,10 @@ export class BillService {
 
 	async checkoutBill(userId: string, discountId: string) {
 		try {
-			let unpaidBill = await this.billModel.findOne({ userId, billPayed: false });
+			const unpaidBill = await this.billModel.findOne({
+				userId,
+				billPayed: false,
+			});
 			if (!unpaidBill) {
 				return new responseError(404, 'bill is not exist');
 			}
@@ -185,7 +236,8 @@ export class BillService {
 				if (mongoose.Types.ObjectId.isValid(discountId)) {
 					return new responseError(400, 'discountId is not valid');
 				}
-				const discountExist = await this.discountModel.findById(discountId);
+				const discountExist =
+					await this.discountModel.findById(discountId);
 				if (!discountExist) {
 					return new responseError(404, 'discount is not exist');
 				}
@@ -195,11 +247,19 @@ export class BillService {
 					return new responseError(400, 'discount is expired');
 				}
 				// check if discount is used
-				const userUsedDiscount = discountExist.users.find((user) => user.userId.toString() == userId && user.used == false);
+				const userUsedDiscount = discountExist.users.find(
+					(user) =>
+						user.userId.toString() == userId && user.used == false,
+				);
 				if (!userUsedDiscount) {
-					return new responseError(400, 'discount is not available for this user');
+					return new responseError(
+						400,
+						'discount is not available for this user',
+					);
 				}
-				unpaidBill.totalMoney = unpaidBill.totalMoney * (1 - discountExist.discountPercent / 100);
+				unpaidBill.totalMoney =
+					unpaidBill.totalMoney *
+					(1 - discountExist.discountPercent / 100);
 				userUsedDiscount.used = true;
 				unpaidBill.billPayed = true;
 			}

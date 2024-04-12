@@ -22,6 +22,11 @@ async function bootstrap() {
 	const document = SwaggerModule.createDocument(app, config);
 	SwaggerModule.setup('api', app, document);
 
+	// Hide all dtos in swagger ui
+	// SwaggerModule.setup('swagger', app, document, {
+	// 	swaggerOptions: { defaultModelsExpandDepth: -1 },
+	// });
+
 	// cors
 	app.enableCors();
 	// start server
