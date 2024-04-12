@@ -520,13 +520,55 @@ export class DishesController {
 		return await this.dishesService.searchDishesByName(keyword);
 	}
 
-	// TODO
-	@ApiOperation({
-		summary: 'This endpoint is currently under development',
-		description:
-			'Detailed information about the endpoint will be available once development is complete.',
-	})
-	@ApiOperation({ summary: '[NO AUTH] Get all reviews of a dish' })
+	// Swagger's decorators
+	@ApiOperation({ summary: '[NO AUTH] Get all comments of a dish' })
+	@CustomSuccessfulApiResponse(
+		'Get all comments of dish successfully',
+		HttpStatus.OK,
+		[
+			{
+				_id: '66180b351effbd8d0ebdae56',
+				content: 'Tra sua rat ngon',
+				userId: '66082c2b92de5d775491d6c5',
+				dishId: '660fdc7b70dc7fb614ceaa4b',
+				rating: 5,
+				level: 0,
+				replies: [
+					{
+						_id: '66180b511effbd8d0ebdae5b',
+						content: 'Eo ngon dau',
+						userId: '66082c2b92de5d775491d6c5',
+						dishId: '660fdc7b70dc7fb614ceaa4b',
+						rating: 0,
+						level: 1,
+						replies: [],
+						createdAt: '2024-04-11T16:09:53.530Z',
+						updatedAt: '2024-04-11T16:09:53.530Z',
+						__v: 0,
+					},
+					{
+						_id: '66180eb80c5544c6e06c1f28',
+						content: 'Toi thi thay rat ngon',
+						userId: '66082c2b92de5d775491d6c5',
+						dishId: '660fdc7b70dc7fb614ceaa4b',
+						rating: 0,
+						level: 1,
+						replies: [],
+						createdAt: '2024-04-11T16:24:24.918Z',
+						updatedAt: '2024-04-11T16:24:24.918Z',
+						__v: 0,
+					},
+				],
+				createdAt: '2024-04-11T16:09:25.902Z',
+				updatedAt: '2024-04-11T16:24:24.814Z',
+				__v: 2,
+			},
+		],
+	)
+	@CustomBadRequestApiResponse('Invalid dish id')
+	@CustomNotFoundApiResponse('No comments exists')
+	@CustomInternalServerErrorApiResponse('Internal server error')
+	// Controller's decorators
 	@Get('/comments/:dishId')
 	async getAllCommentsOfDish(@Param('dishId') dishId: string) {
 		return await this.dishesService.getAllCommentsOfDish(dishId);

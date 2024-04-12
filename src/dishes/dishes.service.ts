@@ -333,6 +333,10 @@ export class DishesService {
 	}
 
 	async getAllCommentsOfDish(dishId: string) {
+		if (!Types.ObjectId.isValid(dishId)) {
+			throw new BadRequestException('Invalid dish id');
+		}
+
 		const comments = await this.commentModel
 			.find({ level: 0, dishId: dishId })
 			.populate('replies');

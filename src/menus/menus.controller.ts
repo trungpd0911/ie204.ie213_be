@@ -14,7 +14,7 @@ import { responseData } from 'src/global/globalClass';
 export class MenusController {
 	constructor(private readonly menusService: MenusService) {}
 
-	@ApiOperation({ summary: 'Get all  menus' })
+	@ApiOperation({ summary: '[NO AUTH] Get all  menus' })
 	@CustomSuccessfulApiResponse('Get all menus successfully', HttpStatus.OK, [
 		{
 			_id: '6608301dc11b247adbd84f28',
@@ -22,6 +22,7 @@ export class MenusController {
 		},
 		{
 			_id: '66083088c11b247adbd84f29',
+			menuName: 'Tráng miệng',
 		},
 		{
 			_id: '66083097c11b247adbd84f2a',

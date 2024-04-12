@@ -1,5 +1,6 @@
 import {
 	BadRequestException,
+	ForbiddenException,
 	HttpStatus,
 	Injectable,
 	InternalServerErrorException,
@@ -140,16 +141,22 @@ export class CommentsService {
 
 		const comment = await this.commentModel.findOne({
 			_id: id,
-			userId: userId,
 		});
 
 		if (!comment) {
 			throw new NotFoundException('Comment not found');
 		}
 
+		// !!! Get warning but running correctly !!!
+		if (!comment.userId['_id'].equals(userId)) {
+			throw new ForbiddenException(
+				'You are not allowed to remove this comment',
+			);
+		}
+
 		try {
 			// Remove all their replies
-			for (let replyId of comment.replies) {
+			for (const replyId of comment.replies) {
 				this.commentModel.deleteOne({ id: replyId });
 			}
 
@@ -160,7 +167,7 @@ export class CommentsService {
 				'Dish is deleted successfully',
 			);
 		} catch (e) {
-			throw new InternalServerErrorException('Internal server error');
+			throw new InternalServerErrorException(e);
 		}
 	}
 }
