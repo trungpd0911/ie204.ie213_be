@@ -6,15 +6,7 @@ export const tokenErrorResponse = ApiResponse({
 	status: 401,
 	description: 'Invalid token or expired',
 	schema: {
-		example: new responseError(403, 'Invalid token or expired'),
-	},
-});
-
-export const serverErrorResponse = ApiResponse({
-	status: 500,
-	description: 'Internal server error',
-	schema: {
-		example: new responseError(500, 'Internal server error'),
+		example: new responseError(401, 'Invalid token or expired'),
 	},
 });
 

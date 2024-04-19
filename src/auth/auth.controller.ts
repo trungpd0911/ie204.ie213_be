@@ -4,10 +4,8 @@ import { AuthService } from './auth.service';
 import { RegisterUserDto } from './dto/registerUser.dto';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { responseData, responseError } from '../global/globalClass';
-import { serverErrorResponse } from '../global/api-responses';
 
 @ApiTags('auth')
-@serverErrorResponse
 @Controller('auth')
 export class AuthController {
 	constructor(private authService: AuthService) {}

@@ -1,9 +1,11 @@
 import {
 	Body,
 	Controller,
+	Delete,
 	Get,
 	Param,
 	Post,
+	Put,
 	Req,
 	Request,
 	UploadedFiles,
@@ -17,15 +19,15 @@ import { ApiBearerAuth, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { responseData, responseError } from '../global/globalClass';
 import { RoleGuard } from '../guards/role.guard';
 import {
+	CustomSuccessfulApiResponse,
 	invalidIdResponse,
 	permissionErrorResponse,
-	serverErrorResponse,
 	tokenErrorResponse,
 } from '../global/api-responses';
+import { UpdatePostDto } from './dto/UpdatePost.dto';
 
 @ApiTags('posts')
 @Controller('posts')
-@serverErrorResponse
 export class PostsController {
 	constructor(private postsService: PostsService) {}
 
@@ -162,10 +164,38 @@ export class PostsController {
 	@tokenErrorResponse
 	@ApiBearerAuth()
 	@Post('/')
+	@ApiBearerAuth()
 	@UseGuards(new RoleGuard(['admin']))
 	@UseGuards(AuthGuard)
 	async createPost(@Request() req, @Body() createPostDto: CreatePostDto) {
 		const userId = req.currentUser._id;
 		return await this.postsService.createPost(createPostDto, userId);
+	}
+
+	@tokenErrorResponse
+	@permissionErrorResponse
+	@CustomSuccessfulApiResponse('Update post successfully', 200, null)
+	@invalidIdResponse
+	@ApiBearerAuth()
+	@UseGuards(new RoleGuard(['admin']))
+	@UseGuards(AuthGuard)
+	@Put('/:id')
+	async updatePost(
+		@Param('id') id: string,
+		@Body() updatePostDto: UpdatePostDto,
+	) {
+		return await this.postsService.updatePost(id, updatePostDto);
+	}
+
+	@tokenErrorResponse
+	@permissionErrorResponse
+	@CustomSuccessfulApiResponse('Delete post successfully', 200, null)
+	@invalidIdResponse
+	@ApiBearerAuth()
+	@UseGuards(new RoleGuard(['admin']))
+	@UseGuards(AuthGuard)
+	@Delete('/:id')
+	async deletePost(@Param('id') id: string) {
+		return await this.postsService.deletePost(id);
 	}
 }
