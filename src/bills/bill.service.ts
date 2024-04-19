@@ -222,6 +222,59 @@ export class BillService {
 		}
 	}
 
+	async adminCheckoutBill(userId: string, discountId: string) {
+		if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
+			return new responseError(400, 'userId is not valid');
+		}
+		if (discountId && !mongoose.Types.ObjectId.isValid(discountId)) {
+			return new responseError(400, 'discountId is not valid');
+		}
+		try {
+			const unpaidBill = await this.billModel.findOne({
+				userId,
+				billPayed: false,
+			});
+			if (!unpaidBill) {
+				return new responseError(404, 'bill is not exist');
+			}
+			if (discountId) {
+				const discountExist =
+					await this.discountModel.findById(discountId);
+				if (!discountExist) {
+					return new responseError(404, 'discount is not exist');
+				}
+				const currentDate = new Date();
+				if (discountExist.endDay < currentDate) {
+					return new responseError(403, 'discount is expired');
+				}
+				const userUsedDiscount = discountExist.users.find(
+					(user) =>
+						user.userId.toString() == userId && user.used == false,
+				);
+				if (!userUsedDiscount) {
+					return new responseError(
+						403,
+						'discount is not available for this user',
+					);
+				}
+				unpaidBill.totalMoney =
+					unpaidBill.totalMoney *
+					(1 - discountExist.discountPercent / 100);
+				userUsedDiscount.used = true;
+				unpaidBill.billPayed = true;
+			}
+			await unpaidBill.save();
+			return new responseData(
+				null,
+				200,
+				'admin checkout bill successfully',
+			);
+		} catch (error) {
+			console.log(error);
+			throw new InternalServerErrorException(error);
+		}
+	}
+
 	async checkoutBill(userId: string, discountId: string) {
 		try {
 			const unpaidBill = await this.billModel.findOne({

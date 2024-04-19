@@ -4,13 +4,11 @@ import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import {
 	CustomInternalServerErrorApiResponse,
 	CustomSuccessfulApiResponse,
-	serverErrorResponse,
 } from 'src/global/api-responses';
 import { responseData } from 'src/global/globalClass';
 
 @ApiTags('menus')
 @Controller('/menus')
-@serverErrorResponse
 export class MenusController {
 	constructor(private readonly menusService: MenusService) {}
 

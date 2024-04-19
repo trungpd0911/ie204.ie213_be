@@ -27,9 +27,10 @@ import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { responseData, responseError } from '../global/globalClass';
 import { UpdateUserDto } from './dto/UpdateUser.dto';
 import {
+	CustomApiResponse,
+	CustomSuccessfulApiResponse,
 	invalidIdResponse,
 	permissionErrorResponse,
-	serverErrorResponse,
 	tokenErrorResponse,
 } from '../global/api-responses';
 
@@ -38,7 +39,6 @@ import {
 @ApiTags('users')
 // controller
 @Controller('users')
-@serverErrorResponse
 export class UsersController {
 	constructor(
 		private userService: UsersService,
@@ -76,11 +76,28 @@ export class UsersController {
 		return await this.userService.getAllUsers();
 	}
 
+	@CustomSuccessfulApiResponse('get current user successfully', 200, {
+		_id: '',
+		username: 'trungphan',
+		email: 'trungphan@gmail.com',
+		role: 'admin',
+		avatar: {
+			link: 'http://res.cloudinary.com/dsygiu1h0/image/upload/v1711636668/bepUIT-avatar/hbxuxa9fskaizke9jt2l.png',
+			publicId: '',
+			_id: '',
+		},
+		tables: [],
+		discounts: [],
+		createdAt: '',
+		updatedAt: '',
+		__v: 0,
+	})
 	@tokenErrorResponse
 	@Get('/current-user')
 	@UseGuards(AuthGuard)
 	async getCurrentUser(@currentUser() currentUser) {
-		return await currentUser;
+		const user = await currentUser;
+		return new responseData(user, 200, 'get current user successfully');
 	}
 
 	@tokenErrorResponse

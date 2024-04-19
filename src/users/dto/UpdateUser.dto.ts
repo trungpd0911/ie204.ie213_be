@@ -13,17 +13,14 @@ export class UpdateUserDto {
 	email: string;
 
 	@ApiProperty({ example: 'updated gender' })
-	@IsNotEmpty()
 	@IsString()
 	gender: string;
 
 	@ApiProperty({ example: 'updated address' })
-	@IsNotEmpty()
 	@IsString()
 	address: string;
 
 	@ApiProperty({ example: 'updated phoneNumber' })
-	@IsNotEmpty()
 	@IsString()
 	phoneNumber: string;
 }

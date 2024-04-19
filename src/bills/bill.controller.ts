@@ -9,20 +9,21 @@ import {
 	Request,
 	UseGuards,
 } from '@nestjs/common';
-import { ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { BillService } from './bill.service';
 import { AuthGuard } from '../guards/auth.guard';
 import { RoleGuard } from '../guards/role.guard';
 import { responseData, responseError } from '../global/globalClass';
 import {
+	CustomApiResponse,
+	CustomSuccessfulApiResponse,
 	permissionErrorResponse,
-	serverErrorResponse,
 	tokenErrorResponse,
 } from '../global/api-responses';
 
 @ApiTags('bills')
 @Controller('bills')
-@serverErrorResponse
+@ApiBearerAuth()
 export class BillController {
 	constructor(private billService: BillService) {}
 
@@ -79,6 +80,26 @@ export class BillController {
 	async checkoutBill(@Request() req, @Body('discountId') discountId: string) {
 		const userId = req.currentUser._id;
 		return await this.billService.checkoutBill(userId, discountId);
+	}
+
+	// admin checkout bill for user when user pay bill by cash
+	@CustomSuccessfulApiResponse('admin checkout bill successfully', 200, null)
+	@ApiResponse({
+		status: 404,
+		description: 'bill is not exist',
+		schema: {
+			example: new responseError(404, 'bill is not exist'),
+		},
+	})
+	@CustomApiResponse('userId is not valid', 400)
+	@UseGuards(new RoleGuard(['admin']))
+	@UseGuards(AuthGuard)
+	@Post('/admin/checkout/:id')
+	async adminCheckoutBill(
+		@Body('discountId') discountId: string,
+		@Param('id') id: string,
+	) {
+		return await this.billService.adminCheckoutBill(id, discountId);
 	}
 
 	// owner user
@@ -159,6 +180,17 @@ export class BillController {
 			example: new responseError(400, 'dishId is not valid'),
 		},
 	})
+	@ApiBody({
+		schema: {
+			type: 'object',
+			properties: {
+				dishId: {
+					type: 'string',
+					description: 'dishId',
+				},
+			},
+		},
+	})
 	@Post('/cart/add')
 	@UseGuards(AuthGuard)
 	async addDishToCart(@Request() req, @Body('dishId') dishId: string) {
@@ -192,6 +224,17 @@ export class BillController {
 			example: new responseError(404, 'bill is not exist'),
 		},
 	})
+	@ApiBody({
+		schema: {
+			type: 'object',
+			properties: {
+				dishId: {
+					type: 'string',
+					description: 'dishId',
+				},
+			},
+		},
+	})
 	@Post('/cart/sub')
 	@UseGuards(AuthGuard)
 	async subtractDishFromCart(@Request() req, @Body('dishId') dishId: string) {
@@ -223,6 +266,17 @@ export class BillController {
 		description: 'bill is not exist',
 		schema: {
 			example: new responseError(404, 'bill is not exist'),
+		},
+	})
+	@ApiBody({
+		schema: {
+			type: 'object',
+			properties: {
+				dishId: {
+					type: 'string',
+					description: 'dishId',
+				},
+			},
 		},
 	})
 	@UseGuards(AuthGuard)
