@@ -243,12 +243,12 @@ export class DishesController {
 	@ApiQuery({
 		name: 'page',
 		required: true,
-		description: 'Index of requested page',
+		description: 'Index of requested page (>= 1)',
 	})
 	@ApiQuery({
 		name: 'perPage',
 		required: true,
-		description: 'Number of dishes per page',
+		description: 'Number of dishes per page (>= 1)',
 	})
 	@CustomSuccessfulApiResponse(
 		'Get all dishes with pagination successfully',
@@ -314,12 +314,12 @@ export class DishesController {
 	@ApiQuery({
 		name: 'page',
 		required: true,
-		description: 'Index of requested page',
+		description: 'Index of requested page (>= 1)',
 	})
 	@ApiQuery({
 		name: 'perPage',
 		required: true,
-		description: 'Number of dishes per page',
+		description: 'Number of dishes per page (>= 1)',
 	})
 	@CustomSuccessfulApiResponse(
 		'Filter dishes by price and memu ID successfully',
@@ -626,6 +626,53 @@ export class DishesController {
 		@Param('id') id: string,
 		@Query('number') number: number,
 	) {
-		return await this.dishesService.getSomeRelativeDishes(id, number);
+		return await this.dishesService.getSomeRelativeDishes(id, +number);
+	}
+
+	// Swagger's decorators
+	@ApiOperation({ summary: '[NO AUTH] Get top sales dishes' })
+	@ApiQuery({
+		name: 'number',
+		required: true,
+		description: 'Number of dishes want to get',
+	})
+	@CustomSuccessfulApiResponse('Get top sales dishes', HttpStatus.OK, {
+		dishes: [
+			{
+				_id: '660fdc7b70dc7fb614ceaa4b',
+				dishName: 'Tra sua do vai lin',
+				dishPrice: 20000,
+				dishDescription: 'Khong co gi ngon',
+				totalOrder: 0,
+				menuId: '66083097c11b247adbd84f2a',
+				rating: 5,
+				dishImages: [
+					{
+						link: 'http://res.cloudinary.com/ddexbqgmg/image/upload/v1712315515/bepUIT-dishImages/lmskq9koz19kmvcz2uyt.jpg',
+						id: 'bepUIT-dishImages/lmskq9koz19kmvcz2uyt',
+						_id: '660fdc7b70dc7fb614ceaa4c',
+					},
+					{
+						link: 'http://res.cloudinary.com/ddexbqgmg/image/upload/v1712315515/bepUIT-dishImages/iwuxrcc5wtgzjkasl7v3.jpg',
+						id: 'bepUIT-dishImages/iwuxrcc5wtgzjkasl7v3',
+						_id: '660fdc7b70dc7fb614ceaa4d',
+					},
+				],
+				slugName:
+					'tra-sua-tran-chau-duong-den-nhieu-duong-den-660fdc7b70dc7fb614ceaa4b',
+				createdAt: '2024-04-05T11:11:55.702Z',
+				updatedAt: '2024-04-05T14:24:40.127Z',
+				__v: 0,
+			},
+		],
+		isLastPage: true,
+	})
+	@CustomNotFoundApiResponse('No dish found')
+	@CustomBadRequestApiResponse('Invalid number parameter')
+	@CustomInternalServerErrorApiResponse('Internal server error')
+	// Controllers's decorators
+	@Get('/topsales')
+	async getTopSalesDishes(@Query('number') number: number) {
+		return await this.dishesService.getTopSalesDishes(+number);
 	}
 }
