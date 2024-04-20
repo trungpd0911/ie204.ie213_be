@@ -283,12 +283,12 @@ export class DishesService {
 	}
 
 	// STRATEGY: Random a number of dishes in the same menu
-	async getSomeRelativeDishes(id: string, number: number) {
+	async getSomeRelativeDishes(id: string, n: number) {
 		if (!Types.ObjectId.isValid(id)) {
 			throw new BadRequestException('Invalid id');
 		}
 
-		if (number <= 0) {
+		if (n <= 0) {
 			throw new BadRequestException('Invalid number parameter');
 		}
 
@@ -302,7 +302,7 @@ export class DishesService {
 			const menuId = requestedDish.menuId;
 			const randomDishes = await this.dishModel.aggregate([
 				{ $match: { menuId: menuId } },
-				{ $sample: { size: number } },
+				{ $sample: { size: n } },
 			]);
 
 			return new responseData(
@@ -349,6 +349,22 @@ export class DishesService {
 			comments,
 			HttpStatus.OK,
 			'Get all comments successfully',
+		);
+	}
+
+	async getTopSalesDishes(n: number) {
+		if (n <= 0) {
+			throw new BadRequestException('Invalid number parameter');
+		}
+
+		const dishes = await this.dishModel
+			.find()
+			.sort({ totalOrder: 'desc' })
+			.limit(n);
+		return new responseData(
+			dishes,
+			HttpStatus.OK,
+			'Get top sales dishes successfully',
 		);
 	}
 }
