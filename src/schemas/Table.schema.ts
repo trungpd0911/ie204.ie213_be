@@ -4,6 +4,9 @@ import mongoose from 'mongoose';
 @Schema({ timestamps: true })
 export class Table {
 	@Prop({ required: true, type: String })
+	tableFloor: string;
+
+	@Prop({ required: true, type: String })
 	tablePosition: string;
 
 	@Prop({ required: true, type: String })
@@ -11,17 +14,15 @@ export class Table {
 
 	@Prop({
 		required: false,
-		type: [
-			{
-				userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-				bookingTime: Date,
-			},
-		],
+		type: {
+			userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+			bookingTime: Date,
+		},
 	})
-	users: {
+	user: {
 		userId: { type: mongoose.Schema.Types.ObjectId; ref: 'User' };
 		bookingTime: Date;
-	}[];
+	};
 }
 
 export const TableSchema = SchemaFactory.createForClass(Table);

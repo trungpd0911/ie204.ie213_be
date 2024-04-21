@@ -38,6 +38,9 @@ export class Post {
 		url: string;
 		publicId: string;
 	}[];
+
+	@Prop({ required: true, type: Boolean })
+	thumbNailImage: string;
 }
 
 export const PostSchema = SchemaFactory.createForClass(Post);

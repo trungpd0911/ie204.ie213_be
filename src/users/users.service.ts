@@ -24,6 +24,15 @@ export class UsersService {
 		}
 	}
 
+	async findUserById(id: string) {
+		try {
+			const user = await this.userModel.findById(id).select('-password');
+			return user;
+		} catch (error) {
+			throw error;
+		}
+	}
+
 	async getAllUsers() {
 		try {
 			const users = await this.userModel.find().select('-password -role');
