@@ -13,6 +13,7 @@ import { ThrottlerModule } from '@nestjs/throttler';
 import { AppLoggerMiddleware } from './middlewares/logging-middleware';
 import { MenusModule } from './menus/menus.module';
 import { CommentsModule } from './comments/comments.module';
+import { DiscountsModule } from './discounts/discounts.module';
 import { TablesModule } from './tables/tables.module';
 
 @Module({
@@ -53,6 +54,7 @@ import { TablesModule } from './tables/tables.module';
 		DishesModule,
 		MenusModule,
 		CommentsModule,
+		DiscountsModule,
 		TablesModule,
 	],
 	controllers: [],
