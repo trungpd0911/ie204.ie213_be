@@ -171,7 +171,6 @@ export class PostsController {
 	@UseGuards(new RoleGuard(['admin']))
 	@UseGuards(AuthGuard)
 	async createPost(@Request() req, @Body() createPostDto: CreatePostDto) {
-		console.log(createPostDto);
 		const userId = req.currentUser._id;
 		return await this.postsService.createPost(createPostDto, userId);
 	}
