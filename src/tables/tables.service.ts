@@ -126,6 +126,15 @@ export class TablesService {
 			};
 		}
 
+		if (!table.user) {
+			return {
+				toClient: {
+					message: 'Table is already available',
+				},
+				broadcast: null,
+			};
+		}
+
 		if (table.user.userId.toString() !== userId) {
 			return {
 				toClient: {

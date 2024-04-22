@@ -33,7 +33,10 @@ export class TablesController {
 			tableFloor: 'Tầng 1',
 			tablePosition: 'A1',
 			tableStatus: 'Available',
-			users: [],
+			user: {
+				userId: '',
+				bookingTime: '',
+			},
 			createdAt: '',
 			updatedAt: '',
 			__v: 0,
@@ -50,7 +53,10 @@ export class TablesController {
 			tableFloor: 'Tầng 1',
 			tablePosition: 'A1',
 			tableStatus: 'Available',
-			users: [],
+			user: {
+				userId: '',
+				bookingTime: '',
+			},
 			createdAt: '',
 			updatedAt: '',
 			__v: 0,
