@@ -13,7 +13,7 @@ import {
 import { Server, Socket } from 'socket.io';
 import { TablesService } from './tables.service';
 
-@WebSocketGateway(parseInt(process.env.port_socket), {
+@WebSocketGateway({
 	cors: {
 		origin: '*',
 	},
