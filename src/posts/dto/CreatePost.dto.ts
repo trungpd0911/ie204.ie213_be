@@ -45,4 +45,9 @@ export class CreatePostDto {
 			publicId: string;
 		},
 	];
+
+	@ApiProperty({ example: 'Post thumbnail image' })
+	@IsNotEmpty()
+	@IsString()
+	thumbnailImage: string;
 }

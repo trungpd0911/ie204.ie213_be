@@ -14,6 +14,7 @@ import { AppLoggerMiddleware } from './middlewares/logging-middleware';
 import { MenusModule } from './menus/menus.module';
 import { CommentsModule } from './comments/comments.module';
 import { DiscountsModule } from './discounts/discounts.module';
+import { TablesModule } from './tables/tables.module';
 
 @Module({
 	imports: [
@@ -54,6 +55,7 @@ import { DiscountsModule } from './discounts/discounts.module';
 		MenusModule,
 		CommentsModule,
 		DiscountsModule,
+		TablesModule,
 	],
 	controllers: [],
 	providers: [],

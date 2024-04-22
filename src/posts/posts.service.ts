@@ -73,6 +73,7 @@ export class PostsService {
 				keywords: createPostDto.keywords,
 				title: createPostDto.title,
 				blogImages: createPostDto.blogImages,
+				thumbnailImage: createPostDto.thumbnailImage,
 			});
 			const slugName =
 				configSlug.convertToSlug(createPostDto.title) +
@@ -82,13 +83,6 @@ export class PostsService {
 			newPost.slugName = slugName;
 			await newPost.save();
 			return new responseData(null, 201, 'Post created successfully');
-		} catch (error) {
-			throw new InternalServerErrorException(error);
-		}
-	}
-
-	async uploadImages(cloudImages: object, blogId: string) {
-		try {
 		} catch (error) {
 			throw new InternalServerErrorException(error);
 		}
@@ -131,7 +125,8 @@ export class PostsService {
 			// delete images in cloudinary
 			const images = post.blogImages;
 			images.forEach(async (image) => {
-				await this.cloudinaryService.deleteFile(image.publicId);
+				if (image.publicId !== '' && image.publicId !== null)
+					await this.cloudinaryService.deleteFile(image.publicId);
 			});
 			await this.postModel.findByIdAndDelete(id);
 			return new responseData(null, 200, 'Delete post successfully');
