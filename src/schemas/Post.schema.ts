@@ -39,8 +39,8 @@ export class Post {
 		publicId: string;
 	}[];
 
-	@Prop({ required: true, type: Boolean })
-	thumbNailImage: string;
+	@Prop({ required: true, type: String })
+	thumbnailImage: string;
 }
 
 export const PostSchema = SchemaFactory.createForClass(Post);
