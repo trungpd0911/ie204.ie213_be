@@ -7,7 +7,6 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { JwtModule, JwtModuleOptions } from '@nestjs/jwt';
 import { BillModule } from './bills/bill.module';
 import { CloudinaryModule } from './cloudinary/cloudinary.module';
-import { UsersService } from './users/users.service';
 import { DishesModule } from './dishes/dishes.module';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { AppLoggerMiddleware } from './middlewares/logging-middleware';
@@ -15,6 +14,9 @@ import { MenusModule } from './menus/menus.module';
 import { CommentsModule } from './comments/comments.module';
 import { DiscountsModule } from './discounts/discounts.module';
 import { TablesModule } from './tables/tables.module';
+import { MailerModule } from '@nestjs-modules/mailer';
+import path, { join } from 'path';
+import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 
 @Module({
 	imports: [
@@ -22,6 +24,30 @@ import { TablesModule } from './tables/tables.module';
 		// 	ttl: 3000,
 		// 	limit: 2,
 		// }]),
+		MailerModule.forRootAsync({
+			imports: [ConfigModule],
+			inject: [ConfigService],
+			useFactory: async (configService: ConfigService) => ({
+				transport: {
+					host: configService.get<string>('MAIL_HOST'),
+					secure: false,
+					auth: {
+						user: configService.get<string>('MAIL_USER'),
+						pass: configService.get<string>('MAIL_PASS'),
+					},
+				},
+				defaults: {
+					from: 'no reply ' + configService.get<string>('MAIL_USER'),
+				},
+				template: {
+					dir: join(__dirname, '/templates/mail'),
+					adapter: new HandlebarsAdapter(),
+					options: {
+						strict: true,
+					},
+				},
+			}),
+		}),
 		ConfigModule.forRoot({
 			isGlobal: true,
 			envFilePath: '.env',

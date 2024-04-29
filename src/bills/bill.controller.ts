@@ -16,6 +16,7 @@ import { RoleGuard } from '../guards/role.guard';
 import { responseData, responseError } from '../global/globalClass';
 import {
 	CustomApiResponse,
+	CustomNotFoundApiResponse,
 	CustomSuccessfulApiResponse,
 	permissionErrorResponse,
 	tokenErrorResponse,
@@ -38,7 +39,7 @@ export class BillController {
 			example: new responseData(null, 200, 'get all bills successfully'),
 		},
 	})
-	@Get('/all')
+	@Get('/admin/all')
 	@UseGuards(new RoleGuard(['admin']))
 	@UseGuards(AuthGuard)
 	async getAllBills() {
@@ -133,11 +134,19 @@ export class BillController {
 			),
 		},
 	})
+	@CustomNotFoundApiResponse('there is no dish in the cart')
 	@Get('/cart')
 	@UseGuards(AuthGuard)
 	async getDishesInCArt(@Request() req) {
 		const userId = req.currentUser._id;
 		return await this.billService.getAllDishesInCart(userId);
+	}
+
+	@UseGuards(AuthGuard)
+	@Get('/order')
+	async getAllBillOfUser(@Request() req) {
+		const userId = req.currentUser._id;
+		return await this.billService.getAllBillOfUser(userId);
 	}
 
 	@ApiResponse({

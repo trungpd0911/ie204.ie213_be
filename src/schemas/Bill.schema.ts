@@ -22,7 +22,7 @@ export class Bill {
 	billDate: Date;
 
 	@Prop({ required: true, type: mongoose.Schema.Types.ObjectId, ref: 'User' })
-	userId: User;
+	user: User;
 
 	@Prop({
 		required: true,
