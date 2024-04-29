@@ -28,14 +28,17 @@ import { responseData, responseError } from '../global/globalClass';
 import { UpdateUserDto } from './dto/UpdateUser.dto';
 import {
 	CustomApiResponse,
+	CustomBadRequestApiResponse,
+	CustomForbidenrrorApiResponse,
+	CustomNotFoundApiResponse,
 	CustomSuccessfulApiResponse,
 	invalidIdResponse,
 	permissionErrorResponse,
 	tokenErrorResponse,
 } from '../global/api-responses';
+import { changePasswordDto } from './dto/ChangePassword.dto';
 
 // swagger
-@ApiBearerAuth()
 @ApiTags('users')
 // controller
 @Controller('users')
@@ -45,6 +48,7 @@ export class UsersController {
 		private cloudinaryService: CloudinaryService,
 	) {}
 
+	@ApiBearerAuth()
 	@Get()
 	@ApiResponse({
 		status: 200,
@@ -76,6 +80,7 @@ export class UsersController {
 		return await this.userService.getAllUsers();
 	}
 
+	@ApiBearerAuth()
 	@CustomSuccessfulApiResponse('get current user successfully', 200, {
 		_id: '',
 		username: 'trungphan',
@@ -100,6 +105,7 @@ export class UsersController {
 		return new responseData(user, 200, 'get current user successfully');
 	}
 
+	@ApiBearerAuth()
 	@tokenErrorResponse
 	@permissionErrorResponse
 	@invalidIdResponse
@@ -142,6 +148,7 @@ export class UsersController {
 		return await this.userService.getUserById(id);
 	}
 
+	@ApiBearerAuth()
 	@invalidIdResponse
 	@tokenErrorResponse
 	@permissionErrorResponse
@@ -168,6 +175,7 @@ export class UsersController {
 		return this.userService.updateUser(userId, id, updateUserDto);
 	}
 
+	@ApiBearerAuth()
 	@tokenErrorResponse
 	@ApiResponse({
 		status: 200,
@@ -206,5 +214,46 @@ export class UsersController {
 			uploadFile.url,
 			uploadFile.public_id,
 		);
+	}
+
+	@ApiBearerAuth()
+	@CustomSuccessfulApiResponse('change password successfully', 200, null)
+	@tokenErrorResponse
+	@CustomBadRequestApiResponse('wrong password')
+	@CustomForbidenrrorApiResponse(
+		'Password must contain at least 8 characters and at least 1 letter',
+	)
+	@UseGuards(AuthGuard)
+	@Post('/change-password')
+	async changePassword(
+		@Request() req,
+		@Body() changePasswordDto: changePasswordDto,
+	) {
+		return await this.userService.changePassword(
+			req.currentUser._id,
+			changePasswordDto.oldPassword,
+			changePasswordDto.newPassword,
+		);
+	}
+
+	@ApiBody({
+		schema: {
+			type: 'object',
+			properties: {
+				email: {
+					type: 'string',
+				},
+			},
+		},
+	})
+	@CustomSuccessfulApiResponse(
+		'new password has been sent to your email',
+		200,
+		null,
+	)
+	@CustomNotFoundApiResponse('User not found')
+	@Post('/forgot-password')
+	async forgotPassword(@Body('email') email: string) {
+		return await this.userService.forgotPassword(email);
 	}
 }

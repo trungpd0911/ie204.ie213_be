@@ -19,7 +19,7 @@ export class BillService {
 			// select username, id from users
 			const allBills = await this.billModel
 				.find()
-				.populate('userId', 'username');
+				.populate('user', 'username');
 			return new responseData(
 				allBills,
 				200,
@@ -39,12 +39,12 @@ export class BillService {
 
 		try {
 			let unpaidBill = await this.billModel.findOne({
-				userId,
+				user: userId,
 				billPayed: false,
 			});
 			if (!unpaidBill) {
 				unpaidBill = await this.billModel.create({
-					userId: userId,
+					user: userId,
 					billDate: Date.now(),
 					totalMoney: 0,
 					billPayed: false,
@@ -81,7 +81,7 @@ export class BillService {
 
 		try {
 			const unpaidBill = await this.billModel.findOne({
-				userId,
+				user: userId,
 				billPayed: false,
 			});
 			if (!unpaidBill) {
@@ -130,7 +130,7 @@ export class BillService {
 
 		try {
 			const unpaidBill = await this.billModel.findOne({
-				userId,
+				user: userId,
 				billPayed: false,
 			});
 			if (!unpaidBill) {
@@ -171,7 +171,7 @@ export class BillService {
 	async resetCart(userId) {
 		try {
 			const unpaidBill = await this.billModel.findOne({
-				userId,
+				user: userId,
 				billPayed: false,
 			});
 			if (!unpaidBill) {
@@ -191,10 +191,10 @@ export class BillService {
 	async getAllDishesInCart(userId: string) {
 		try {
 			const unpaidBill = await this.billModel
-				.findOne({ userId, billPayed: false })
+				.findOne({ user: userId, billPayed: false })
 				.populate('billDishes.dishId');
 			if (!unpaidBill) {
-				return new responseError(404, 'bill is not exist');
+				return new responseError(404, 'there is no dish in the cart');
 			}
 			const allDishes = unpaidBill.billDishes;
 			// get all dishes and the count of each dish in the bill from dishModel
@@ -222,6 +222,47 @@ export class BillService {
 		}
 	}
 
+	async getAllBillOfUser(userId: string) {
+		if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
+			return new responseError(400, 'userId is not valid');
+		}
+		try {
+			const allBills = await this.billModel.find({
+				user: userId,
+				billPayed: true,
+			});
+			return allBills;
+			// take all dishes in each bill
+			const allDishes = allBills.map((bill) => bill.billDishes);
+			// asign all dish info to each dish in allDishes array and asign all dishes to allBills array
+			const allBillWithDishes = await Promise.all(
+				allDishes.map(async (dishes) => {
+					const dishInfo = await Promise.all(
+						dishes.map(async (dish) => {
+							const dishDetail = await this.dishModel.findById(
+								dish.dishId,
+								'dishName dishPrice dishImages',
+							);
+							return {
+								...dishDetail.toObject(),
+								dishAmount: dish.dishAmount,
+							};
+						}),
+					);
+					return dishInfo;
+				}),
+			);
+			return new responseData(
+				allBillWithDishes,
+				200,
+				'get all bill of user successfully',
+			);
+		} catch (error) {
+			console.log(error);
+			throw new InternalServerErrorException(error);
+		}
+	}
+
 	async adminCheckoutBill(userId: string, discountId: string) {
 		if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
 			return new responseError(400, 'userId is not valid');
@@ -231,7 +272,7 @@ export class BillService {
 		}
 		try {
 			const unpaidBill = await this.billModel.findOne({
-				userId,
+				user: userId,
 				billPayed: false,
 			});
 			if (!unpaidBill) {
@@ -263,6 +304,8 @@ export class BillService {
 				userUsedDiscount.used = true;
 				unpaidBill.billPayed = true;
 			}
+			// if don't have discount
+			unpaidBill.billPayed = true;
 			await unpaidBill.save();
 			return new responseData(
 				null,
@@ -278,7 +321,7 @@ export class BillService {
 	async checkoutBill(userId: string, discountId: string) {
 		try {
 			const unpaidBill = await this.billModel.findOne({
-				userId,
+				user: userId,
 				billPayed: false,
 			});
 			if (!unpaidBill) {
@@ -316,6 +359,8 @@ export class BillService {
 				userUsedDiscount.used = true;
 				unpaidBill.billPayed = true;
 			}
+			// if don't have discount
+			unpaidBill.billPayed = true;
 			await unpaidBill.save();
 			return new responseData(null, 200, 'checkout bill successfully');
 		} catch (error) {

@@ -26,7 +26,11 @@ export class TablesService {
 
 	async getAllTables() {
 		try {
-			const allTables = await this.tableModel.find().exec();
+			// take username from user collection
+			const allTables = await this.tableModel
+				.find()
+				.populate('user', 'username')
+				.exec();
 			return new responseData(
 				allTables,
 				200,
@@ -97,7 +101,7 @@ export class TablesService {
 				tableId: tableId,
 			},
 			broadcast: {
-				message: 'Book table successfully',
+				message: 'A table has been booked',
 				tableId: tableId,
 			},
 		};
@@ -148,13 +152,14 @@ export class TablesService {
 			tableStatus: 'Available',
 			user: null,
 		});
+
 		return {
 			toClient: {
 				message: 'Cancel table successfully',
 				tableId: tableId,
 			},
 			broadcast: {
-				message: 'Cancel table successfully',
+				message: 'A table has been canceled',
 				tableId: tableId,
 			},
 		};

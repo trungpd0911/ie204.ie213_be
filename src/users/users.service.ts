@@ -5,12 +5,16 @@ import { responseData } from '../global/globalClass';
 import { User } from '../schemas/User.schema';
 import { UpdateUserDto } from './dto/UpdateUser.dto';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
+import { AuthService } from '../auth/auth.service';
+import { MailerService } from '@nestjs-modules/mailer';
 
 @Injectable()
 export class UsersService {
 	constructor(
 		@InjectModel(User.name) private userModel: Model<User>,
 		private cloudinaryService: CloudinaryService,
+		private authService: AuthService,
+		private mailerService: MailerService,
 	) {}
 
 	async findUserByEmail(email: string) {
@@ -98,6 +102,117 @@ export class UsersService {
 			await user.save();
 			console.log(user);
 			return new responseData(null, 200, 'change avatar successfully');
+		} catch (error) {
+			throw new Error(error);
+		}
+	}
+
+	async changePassword(id: string, oldPassword: string, newPassword: string) {
+		if (!Types.ObjectId.isValid(id)) {
+			return new HttpException('Invalid id', 400);
+		}
+		try {
+			const user = await this.userModel.findById(id);
+			if (!user) {
+				return new HttpException('User not found', 404);
+			}
+			const checkPassword = await this.authService.comparePassword(
+				oldPassword,
+				user.password,
+			);
+			if (!checkPassword) {
+				return new HttpException('Wrong password', 400);
+			}
+			// check new password contain at least 8 characters and at least 1 letter
+			const regex = /^(?=.*[A-Za-z]).+$/;
+			if (newPassword.length < 8 || !regex.test(newPassword)) {
+				return new HttpException(
+					'Password must contain at least 8 characters and at least 1 letter',
+					403,
+				);
+			}
+			const hashedPassword =
+				await this.authService.hashPassword(newPassword);
+			user.password = hashedPassword;
+			await user.save();
+			return new responseData(null, 200, 'change password successfully');
+		} catch (error) {
+			console.log(error);
+			throw new Error(error);
+		}
+	}
+
+	async forgotPassword(email: string) {
+		try {
+			const user = await this.userModel.findOne({ email: email });
+			if (!user) {
+				return new HttpException('User not found', 404);
+			}
+			// random new password contains 10 characters and at least 1 letter
+			const newPassword = Math.random().toString(36).slice(-10);
+			await this.mailerService.sendMail({
+				to: email,
+				subject: 'Forgot Password',
+				html: `<!DOCTYPE html>
+                <html lang="en">
+                
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    <title>New Password</title>
+                </head>
+                
+                <body style="font-family: Arial, sans-serif; margin: 0; padding: 20px; background-color: #f4f4f4;">
+                    <table
+                        style="max-width: 600px; margin: auto; background-color: rgb(250, 250, 250); padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
+                        <tr>
+                            <td style="text-align: center;">
+                                <h2 style="color: #333;">Bếp UIT</h2>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <p style="color: #242424;">Hi ${user.username},</p>
+                                <p style="color: #242424;">We receive your request to reset your password. Please use the following
+                                    password to log in: </p>
+                                <div
+                                    style="font-size: 1.2em; padding: 10px; background-color: #f9f9f9; border-radius: 5px; word-wrap: break-word; overflow-wrap: break-word; color: #333; text-align: center; position: relative;">
+                                    <!-- Place the generated password here -->
+                                    ${newPassword}
+                                    <div style="position: absolute; right: 32%; top: 28%;cursor: pointer;">
+                                        <i style="font-size: 1.5em; color: #333;" class="fas fa-copy" id="copy"></i>
+                                    </div>
+                                </div>
+                                <p style="color: #242424; margin-bottom: 10px;">If you did not request a new password, please let us
+                                    know
+                                    immediately by replying to
+                                    this email. We recommend changing your password after logging in for security purposes.</p>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align: center;">
+                                <p style="color: #242424;">Thank you for using our services!</p>
+                            </td>
+                        </tr>
+                    </table>
+                </body>
+                
+                </html>`,
+				// template: 'emailForgotPassword',
+				// context: {
+				// 	name: user.username,
+				// 	newPassword: newPassword,
+				// },
+			});
+			const hashedPassword =
+				await this.authService.hashPassword(newPassword);
+			user.password = hashedPassword;
+			await user.save();
+			return new responseData(
+				null,
+				200,
+				'new password has been sent to your email',
+			);
 		} catch (error) {
 			throw new Error(error);
 		}
