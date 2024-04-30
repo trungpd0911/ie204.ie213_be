@@ -1,7 +1,7 @@
 import { HttpException, Injectable, Request } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
-import { responseData } from '../global/globalClass';
+import { responseData, responseError } from '../global/globalClass';
 import { User } from '../schemas/User.schema';
 import { UpdateUserDto } from './dto/UpdateUser.dto';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
@@ -109,26 +109,26 @@ export class UsersService {
 
 	async changePassword(id: string, oldPassword: string, newPassword: string) {
 		if (!Types.ObjectId.isValid(id)) {
-			return new HttpException('Invalid id', 400);
+			return new responseError(400, 'Invalid id');
 		}
 		try {
 			const user = await this.userModel.findById(id);
 			if (!user) {
-				return new HttpException('User not found', 404);
+				return new responseError(404, 'User not found');
 			}
 			const checkPassword = await this.authService.comparePassword(
 				oldPassword,
 				user.password,
 			);
 			if (!checkPassword) {
-				return new HttpException('Wrong password', 400);
+				return new responseError(403, 'wrong password');
 			}
 			// check new password contain at least 8 characters and at least 1 letter
 			const regex = /^(?=.*[A-Za-z]).+$/;
 			if (newPassword.length < 8 || !regex.test(newPassword)) {
-				return new HttpException(
-					'Password must contain at least 8 characters and at least 1 letter',
+				return new responseError(
 					403,
+					'Password must contain at least 8 characters and at least 1 letter',
 				);
 			}
 			const hashedPassword =
@@ -146,7 +146,7 @@ export class UsersService {
 		try {
 			const user = await this.userModel.findOne({ email: email });
 			if (!user) {
-				return new HttpException('User not found', 404);
+				return new responseError(404, 'User not found');
 			}
 			// random new password contains 10 characters and at least 1 letter
 			const newPassword = Math.random().toString(36).slice(-10);

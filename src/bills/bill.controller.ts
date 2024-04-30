@@ -16,6 +16,7 @@ import { RoleGuard } from '../guards/role.guard';
 import { responseData, responseError } from '../global/globalClass';
 import {
 	CustomApiResponse,
+	CustomForbidenrrorApiResponse,
 	CustomNotFoundApiResponse,
 	CustomSuccessfulApiResponse,
 	permissionErrorResponse,
@@ -142,6 +143,57 @@ export class BillController {
 		return await this.billService.getAllDishesInCart(userId);
 	}
 
+	// owner user
+	@CustomSuccessfulApiResponse('get all dishes in bill successfully', 200, [
+		{
+			_id: 'id',
+			dishName: 'Bún Chả Hà Nội',
+			dishPrice: 40000,
+			dishImages: [
+				{
+					link: '',
+					id: '',
+					_id: '',
+				},
+			],
+			dishAmount: 4,
+		},
+	])
+	@CustomForbidenrrorApiResponse('you are not allowed to view this bill')
+	@CustomNotFoundApiResponse('bill is not exist')
+	@ApiBearerAuth()
+	@UseGuards(AuthGuard)
+	@Get('/order/dishes/:id')
+	async getAllDishesInBill(@Request() req, @Param('id') id: string) {
+		const userId = req.currentUser._id;
+		return await this.billService.getAllDishesInBill(id, userId);
+	}
+
+	@ApiBearerAuth()
+	@CustomSuccessfulApiResponse('get all bill of user successfully', 200, [
+		{
+			_id: '',
+			totalMoney: 100,
+			billPayed: true,
+			billDate: '2024-04-30',
+			user: 'id',
+			billDishes: [
+				{
+					dishId: '661a8ea490c7de33d0c8a100',
+					dishAmount: 4,
+					_id: '6630c5ac2826bb14dc69e0ac',
+				},
+				{
+					dishId: '661a8ee190c7de33d0c8a109',
+					dishAmount: 2,
+					_id: '6630c5c52826bb14dc69e0d9',
+				},
+			],
+			createdAt: '',
+			updatedAt: '',
+			__v: 2,
+		},
+	])
 	@UseGuards(AuthGuard)
 	@Get('/order')
 	async getAllBillOfUser(@Request() req) {

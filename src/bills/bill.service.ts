@@ -1,4 +1,9 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+	HttpException,
+	HttpStatus,
+	Injectable,
+	InternalServerErrorException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
 import { responseData, responseError } from '../global/globalClass';
@@ -222,6 +227,56 @@ export class BillService {
 		}
 	}
 
+	async getAllDishesInBill(billId: string, userId: string) {
+		if (
+			!billId ||
+			!mongoose.Types.ObjectId.isValid(billId) ||
+			!userId ||
+			!mongoose.Types.ObjectId.isValid(userId)
+		) {
+			return new responseError(400, 'billId is not valid');
+		}
+		try {
+			const paidBill = await this.billModel.findById(billId).findOne({
+				billPayed: true,
+			});
+			if (!paidBill) {
+				return new responseError(404, 'bill is not exist');
+			}
+			if (paidBill.user.toString() !== userId.toString()) {
+				return new responseError(
+					403,
+					'you are not allowed to view this bill',
+				);
+			}
+			const allDishes = paidBill.billDishes;
+			// get all dishes and the count of each dish in the bill from dishModel
+			const dishes = await Promise.all(
+				allDishes.map(async (dish) => {
+					// only select dishName, dishPrice, dishImages, _id from dishModel
+					const dishDetail = await this.dishModel
+						.findById(dish.dishId)
+						.select('dishName dishPrice dishImages');
+					if (!dishDetail) {
+						return new responseError(404, 'dish is not exist');
+					}
+					return {
+						...dishDetail.toObject(),
+						dishAmount: dish.dishAmount,
+					};
+				}),
+			);
+			return new responseData(
+				dishes,
+				200,
+				'get all dishes in bill successfully',
+			);
+		} catch (error) {
+			console.log(error);
+			throw new InternalServerErrorException(error);
+		}
+	}
+
 	async getAllBillOfUser(userId: string) {
 		if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
 			return new responseError(400, 'userId is not valid');
@@ -231,29 +286,8 @@ export class BillService {
 				user: userId,
 				billPayed: true,
 			});
-			return allBills;
-			// take all dishes in each bill
-			const allDishes = allBills.map((bill) => bill.billDishes);
-			// asign all dish info to each dish in allDishes array and asign all dishes to allBills array
-			const allBillWithDishes = await Promise.all(
-				allDishes.map(async (dishes) => {
-					const dishInfo = await Promise.all(
-						dishes.map(async (dish) => {
-							const dishDetail = await this.dishModel.findById(
-								dish.dishId,
-								'dishName dishPrice dishImages',
-							);
-							return {
-								...dishDetail.toObject(),
-								dishAmount: dish.dishAmount,
-							};
-						}),
-					);
-					return dishInfo;
-				}),
-			);
 			return new responseData(
-				allBillWithDishes,
+				allBills,
 				200,
 				'get all bill of user successfully',
 			);
@@ -263,16 +297,15 @@ export class BillService {
 		}
 	}
 
-	async adminCheckoutBill(userId: string, discountId: string) {
-		if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
-			return new responseError(400, 'userId is not valid');
+	async adminCheckoutBill(billId: string, discountId: string) {
+		if (!billId || !mongoose.Types.ObjectId.isValid(billId)) {
+			return new responseError(400, 'billId is not valid');
 		}
 		if (discountId && !mongoose.Types.ObjectId.isValid(discountId)) {
 			return new responseError(400, 'discountId is not valid');
 		}
 		try {
-			const unpaidBill = await this.billModel.findOne({
-				user: userId,
+			const unpaidBill = await this.billModel.findById(billId).findOne({
 				billPayed: false,
 			});
 			if (!unpaidBill) {
@@ -290,7 +323,8 @@ export class BillService {
 				}
 				const userUsedDiscount = discountExist.users.find(
 					(user) =>
-						user.userId.toString() == userId && user.used == false,
+						user.userId.toString() == unpaidBill.user.toString() &&
+						user.used == false,
 				);
 				if (!userUsedDiscount) {
 					return new responseError(
@@ -302,7 +336,6 @@ export class BillService {
 					unpaidBill.totalMoney *
 					(1 - discountExist.discountPercent / 100);
 				userUsedDiscount.used = true;
-				unpaidBill.billPayed = true;
 			}
 			// if don't have discount
 			unpaidBill.billPayed = true;
