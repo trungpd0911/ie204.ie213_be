@@ -474,6 +474,18 @@ export class DishesController {
 		required: true,
 		description: 'Keyword used to search',
 	})
+	@ApiQuery({
+		name: 'sort',
+		required: false,
+		description: "Sort by price ('asc' or 'desc') ",
+	})
+	@ApiQuery({ name: 'minPrice', required: false, description: 'Min price' })
+	@ApiQuery({ name: 'maxPrice', required: false, description: 'Max price' })
+	@ApiQuery({
+		name: 'menuId',
+		required: false,
+		description: 'ID of menu that contains the dish',
+	})
 	@CustomSuccessfulApiResponse(
 		'Search dishes by name successfully',
 		HttpStatus.OK,
@@ -516,8 +528,20 @@ export class DishesController {
 	@CustomInternalServerErrorApiResponse('Internal server error')
 	// Controllers's decorators
 	@Get('/search')
-	async searchDishesByName(@Query('keyword') keyword: string) {
-		return await this.dishesService.searchDishesByName(keyword);
+	async searchDishesByName(
+		@Query('keyword') keyword: string,
+		@Query('sort') sort: string,
+		@Query('minPrice') minPrice: number,
+		@Query('maxPrice') maxPrice: number,
+		@Query('menuId') menuId: string,
+	) {
+		return await this.dishesService.searchDishesByName(
+			keyword,
+			sort,
+			minPrice,
+			maxPrice,
+			menuId,
+		);
 	}
 
 	// Swagger's decorators
