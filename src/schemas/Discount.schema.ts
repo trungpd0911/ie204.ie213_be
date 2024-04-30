@@ -4,6 +4,9 @@ import mongoose from 'mongoose';
 @Schema({ timestamps: true })
 export class Discount {
 	@Prop({ required: true })
+	discountName: string;
+
+	@Prop({ required: true })
 	discountCode: string;
 
 	@Prop({ required: true })
