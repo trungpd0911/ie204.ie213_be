@@ -161,18 +161,68 @@ export class DishesService {
 		}
 	}
 
-	async searchDishesByName(keyword: string) {
+	async searchDishesByName(
+		keyword: string,
+		sort: string,
+		minPrice: number,
+		maxPrice: number,
+		menuId: string,
+	) {
+		// Check request params
+		if (minPrice && maxPrice && minPrice > maxPrice) {
+			throw new BadRequestException(
+				'Invalid params: Min price must be greater than max price',
+			);
+		}
+
 		if (keyword == null || keyword == undefined) {
 			throw new BadRequestException('Invalid keyword parameter');
 		}
 
+		// Build filter using price range and menu ID and keyword
 		const keywordArray = keyword.split(' ');
 		const regexToSearch = '.*' + keywordArray.join('.*') + '.*';
 
-		// Ignore case sensitive
-		const dishes = await this.dishModel.find({
+		const DEFAULT_MAX_PRICE = 9999999999;
+		const DAFAULT_MIN_PRICE = 0;
+
+		const filter = {
+			dishPrice: {
+				$lte: maxPrice || DEFAULT_MAX_PRICE,
+				$gte: minPrice || DAFAULT_MIN_PRICE,
+			},
 			dishName: { $regex: new RegExp(regexToSearch, 'i') },
-		});
+		};
+
+		if (menuId) {
+			Object.assign(filter, { menuId: menuId });
+		}
+
+		// Search result
+		let dishes = [];
+		if (sort === 'asc') {
+			dishes = await this.dishModel.find(filter).sort({ dishPrice: 1 });
+		} else if (sort === 'desc') {
+			dishes = await this.dishModel.find(filter).sort({ dishPrice: -1 });
+		} else {
+			dishes = await this.dishModel.find(filter);
+		}
+
+		if (dishes === null || dishes.length === 0) {
+			throw new NotFoundException('No dishes found');
+		}
+
+		// if (keyword == null || keyword == undefined) {
+		// 	throw new BadRequestException('Invalid keyword parameter');
+		// }
+
+		// const keywordArray = keyword.split(' ');
+		// const regexToSearch = '.*' + keywordArray.join('.*') + '.*';
+
+		// // Ignore case sensitive
+		// const dishes = await this.dishModel.find({
+		// 	dishName: { $regex: new RegExp(regexToSearch, 'i') },
+		// });
 
 		if (dishes === null || dishes.length === 0) {
 			throw new NotFoundException('No dishes found');
