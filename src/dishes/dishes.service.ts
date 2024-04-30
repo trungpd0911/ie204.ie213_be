@@ -171,7 +171,7 @@ export class DishesService {
 
 		// Ignore case sensitive
 		const dishes = await this.dishModel.find({
-			dishName: { $regex: regexToSearch },
+			dishName: { $regex: new RegExp(regexToSearch, 'i') },
 		});
 
 		if (dishes === null || dishes.length === 0) {

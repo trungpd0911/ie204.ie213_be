@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose from 'mongoose';
+import { Discount } from './Discount.schema';
 
 @Schema({ timestamps: true })
 export class User {
@@ -48,7 +49,7 @@ export class User {
 	avatar: { link: string; publicId: string };
 
 	@Prop({
-		required: false,
+		required: true,
 		type: [
 			{
 				discountId: {
@@ -58,9 +59,10 @@ export class User {
 				used: Boolean,
 			},
 		],
+		default: [],
 	})
 	discounts: {
-		discountId: { type: mongoose.Schema.Types.ObjectId; ref: 'Discount' };
+		discountId: Discount;
 		used: boolean;
 	}[];
 }

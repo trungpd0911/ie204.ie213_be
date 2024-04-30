@@ -3,6 +3,7 @@ import { DiscountsService } from './discounts.service';
 import { DiscountsController } from './discounts.controller';
 import { MongooseModule } from '@nestjs/mongoose';
 import { Discount, DiscountSchema } from 'src/schemas/Discount.schema';
+import { User, UserSchema } from 'src/schemas/User.schema';
 
 @Module({
 	imports: [
@@ -10,6 +11,10 @@ import { Discount, DiscountSchema } from 'src/schemas/Discount.schema';
 			{
 				name: Discount.name,
 				schema: DiscountSchema,
+			},
+			{
+				name: User.name,
+				schema: UserSchema,
 			},
 		]),
 	],
