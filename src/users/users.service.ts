@@ -1,4 +1,12 @@
-import { HttpException, Injectable, Request } from '@nestjs/common';
+import {
+	BadRequestException,
+	HttpException,
+	Injectable,
+	InternalServerErrorException,
+	NotFoundException,
+	Request,
+	UnauthorizedException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { responseData, responseError } from '../global/globalClass';
@@ -7,6 +15,7 @@ import { UpdateUserDto } from './dto/UpdateUser.dto';
 import { CloudinaryService } from '../cloudinary/cloudinary.service';
 import { AuthService } from '../auth/auth.service';
 import { MailerService } from '@nestjs-modules/mailer';
+import { Response } from 'express';
 
 @Injectable()
 export class UsersService {
@@ -24,7 +33,10 @@ export class UsersService {
 				.select('-password');
 			return user;
 		} catch (error) {
-			throw new Error(error);
+			if (error instanceof InternalServerErrorException) {
+				console.log(error);
+			}
+			throw error;
 		}
 	}
 
@@ -42,7 +54,10 @@ export class UsersService {
 			const users = await this.userModel.find().select('-password -role');
 			return new responseData(users, 200, 'get all users successfully');
 		} catch (error) {
-			throw new Error(error);
+			if (error instanceof InternalServerErrorException) {
+				console.log(error);
+			}
+			throw error;
 		}
 	}
 
@@ -55,30 +70,36 @@ export class UsersService {
 				.findById(id)
 				.select('-password -role');
 			if (!user) {
-				return new HttpException('User not found', 404);
+				throw new NotFoundException('User not found');
 			}
 			return new responseData(user, 200, 'get user by id successfully');
 		} catch (error) {
-			throw new Error(error);
+			if (error instanceof InternalServerErrorException) {
+				console.log(error);
+			}
+			throw error;
 		}
 	}
 
 	async updateUser(userId, id: string, updateUserDto: UpdateUserDto) {
 		try {
 			if (!Types.ObjectId.isValid(id)) {
-				return new HttpException('Invalid id', 400);
+				throw new BadRequestException('Invalid id');
 			}
 			if (userId != id) {
-				return new HttpException('Permission denied', 403);
+				throw new UnauthorizedException('Permission denied');
 			}
 			const user = await this.userModel.findById(id);
 			if (!user) {
-				return new HttpException('User not found', 404);
+				throw new NotFoundException('User not found');
 			}
 			await this.userModel.findByIdAndUpdate(id, updateUserDto);
 			return new responseData(null, 200, 'update user successfully');
 		} catch (error) {
-			throw new Error(error);
+			if (error instanceof InternalServerErrorException) {
+				console.log(error);
+			}
+			throw error;
 		}
 	}
 
@@ -103,31 +124,33 @@ export class UsersService {
 			console.log(user);
 			return new responseData(null, 200, 'change avatar successfully');
 		} catch (error) {
-			throw new Error(error);
+			if (error instanceof InternalServerErrorException) {
+				console.log(error);
+			}
+			throw error;
 		}
 	}
 
 	async changePassword(id: string, oldPassword: string, newPassword: string) {
 		if (!Types.ObjectId.isValid(id)) {
-			return new responseError(400, 'Invalid id');
+			throw new BadRequestException('Invalid id');
 		}
 		try {
 			const user = await this.userModel.findById(id);
 			if (!user) {
-				return new responseError(404, 'User not found');
+				throw new BadRequestException('User not found');
 			}
 			const checkPassword = await this.authService.comparePassword(
 				oldPassword,
 				user.password,
 			);
 			if (!checkPassword) {
-				return new responseError(403, 'wrong password');
+				throw new BadRequestException('wrong password');
 			}
 			// check new password contain at least 8 characters and at least 1 letter
 			const regex = /^(?=.*[A-Za-z]).+$/;
 			if (newPassword.length < 8 || !regex.test(newPassword)) {
-				return new responseError(
-					403,
+				throw new UnauthorizedException(
 					'Password must contain at least 8 characters and at least 1 letter',
 				);
 			}
@@ -137,8 +160,10 @@ export class UsersService {
 			await user.save();
 			return new responseData(null, 200, 'change password successfully');
 		} catch (error) {
-			console.log(error);
-			throw new Error(error);
+			if (error instanceof InternalServerErrorException) {
+				console.log(error);
+			}
+			throw error;
 		}
 	}
 
@@ -146,7 +171,7 @@ export class UsersService {
 		try {
 			const user = await this.userModel.findOne({ email: email });
 			if (!user) {
-				return new responseError(404, 'User not found');
+				throw new NotFoundException('User not found');
 			}
 			// random new password contains 10 characters and at least 1 letter
 			const newPassword = Math.random().toString(36).slice(-10);
@@ -214,7 +239,10 @@ export class UsersService {
 				'new password has been sent to your email',
 			);
 		} catch (error) {
-			throw new Error(error);
+			if (error instanceof InternalServerErrorException) {
+				console.log(error);
+			}
+			throw error;
 		}
 	}
 }

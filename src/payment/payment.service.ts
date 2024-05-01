@@ -10,8 +10,8 @@ export class PaymentService {
 	constructor(private configService: ConfigService) {}
 
 	private sortObject(obj: any): any {
-		const sorted = {};
-		const str = [];
+		let sorted = {};
+		let str = [];
 		let key: any;
 		for (key in obj) {
 			if (obj.hasOwnProperty(key)) {
@@ -47,13 +47,8 @@ export class PaymentService {
 		let vnpUrl = this.configService.get<string>('vnp_Url');
 		const returnUrl = this.configService.get<string>('vnp_ReturnUrl');
 		const orderId = moment(date).format('DDHHmmss');
-		// let amount = req.body.amount;
-		const bankCode = req.body.bankCode;
-
-		let locale = req.body.language;
-		if (locale === null || locale === '') {
-			locale = 'vn';
-		}
+		const bankCode = req.body.bankCode || '';
+		let locale = 'vn';
 		const currCode = 'VND';
 		let vnp_Params = {};
 		vnp_Params['vnp_Version'] = '2.1.0';
@@ -64,7 +59,7 @@ export class PaymentService {
 		vnp_Params['vnp_TxnRef'] = orderId;
 		vnp_Params['vnp_OrderInfo'] = 'Thanh toan cho ma GD:' + orderId;
 		vnp_Params['vnp_OrderType'] = 'other';
-		vnp_Params['vnp_Amount'] = 100000;
+		vnp_Params['vnp_Amount'] = 1000000;
 		vnp_Params['vnp_ReturnUrl'] = returnUrl;
 		vnp_Params['vnp_IpAddr'] = ipAddr;
 		vnp_Params['vnp_CreateDate'] = createDate;

@@ -1,4 +1,5 @@
 import {
+	BadRequestException,
 	HttpException,
 	Injectable,
 	UnauthorizedException,
@@ -9,7 +10,7 @@ import { User } from '../schemas/User.schema';
 import { LoginUserDto } from './dto/loginUser.dto';
 import { RegisterUserDto } from './dto/registerUser.dto';
 import * as bcrypt from 'bcrypt';
-import { responseData } from '../global/globalClass';
+import { responseData, responseError } from '../global/globalClass';
 import { JwtService } from '@nestjs/jwt';
 
 @Injectable()
@@ -76,14 +77,14 @@ export class AuthService {
 				email: loginUser.email,
 			});
 			if (!checkUser) {
-				throw new UnauthorizedException('wrong email or password');
+				throw new BadRequestException('wrong email or password');
 			}
 			const checkPassword = bcrypt.compareSync(
 				loginUser.password,
 				checkUser.password,
 			);
 			if (!checkPassword) {
-				throw new UnauthorizedException('wrong email or password');
+				throw new BadRequestException('wrong email or password');
 			}
 			const { password, ...user } = checkUser.toObject();
 			const accessToken = await this.generateAccessToken(user);
