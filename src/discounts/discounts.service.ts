@@ -30,9 +30,11 @@ export class DiscountsService {
 		}
 
 		const existedDiscount = await this.discountModel.findOne({
-			discountName: createDiscountDto.discountName,
+			$or: [
+				{ discountName: createDiscountDto.discountName },
+				{ discountCode: createDiscountDto.discountCode },
+			],
 		});
-		console.log(existedDiscount);
 
 		if (existedDiscount) {
 			throw new BadRequestException('Discount existed');
@@ -53,16 +55,17 @@ export class DiscountsService {
 	}
 
 	async getAllDiscounts() {
-		try {
-			const discounts = await this.discountModel.find();
-			return new responseData(
-				discounts,
-				HttpStatus.OK,
-				'Get all discounts successfully',
-			);
-		} catch (e) {
-			throw new InternalServerErrorException(e);
-		}
+		const discounts = await this.discountModel.find();
+
+		// if (discounts.length === 0) {
+		// 	return new NotFoundException("No discount is found")
+		// }
+
+		return new responseData(
+			discounts,
+			HttpStatus.OK,
+			'Get all discounts successfully',
+		);
 	}
 
 	async getDiscountById(id: string) {
@@ -99,8 +102,6 @@ export class DiscountsService {
 		}
 
 		try {
-			// TODO : Remove discount in user's discount list
-
 			await this.discountModel.deleteOne({ _id: id });
 			return new responseData(
 				null,
@@ -206,7 +207,9 @@ export class DiscountsService {
 			users.map(async (user) => {
 				user.discounts = user.discounts.filter(
 					(discount) =>
-						discount && discount.discountId['_id'] != discountId,
+						discount &&
+						discount.discountId &&
+						discount.discountId['_id'] != discountId,
 				);
 				await user.save();
 			}),
