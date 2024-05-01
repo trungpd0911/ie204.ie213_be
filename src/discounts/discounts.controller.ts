@@ -189,6 +189,7 @@ export class DiscountsController {
 	// Controller's decorators
 	@Delete(':id')
 	async removeDiscount(@Param('id') id: string) {
+		await this.discountsService.removeDiscountFromAllUsers(id);
 		return await this.discountsService.removeDiscount(id);
 	}
 

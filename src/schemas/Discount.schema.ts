@@ -9,7 +9,7 @@ export class Discount {
 	@Prop({ required: true })
 	discountCode: string;
 
-	@Prop({ required: true })
+	@Prop({ required: true, min: 0, max: 100 })
 	discountPercent: number;
 
 	@Prop({ required: true })

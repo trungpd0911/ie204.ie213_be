@@ -7,7 +7,7 @@ export class Dish {
 	@Prop({ required: true })
 	dishName: string;
 
-	@Prop({ required: true })
+	@Prop({ required: true, min: 0 })
 	dishPrice: number;
 
 	@Prop({ required: true })

@@ -16,12 +16,14 @@ import UpdateDishDto from './dto/update-dish.dto';
 import { configSlug } from '../helper/slug.helper';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { Comment } from 'src/schemas/Comment.schema';
+import { Menu } from 'src/schemas/Menu.schema';
 
 @Injectable()
 export class DishesService {
 	constructor(
 		@InjectModel(Dish.name) private dishModel: Model<Dish>,
 		@InjectModel(Comment.name) private commentModel: Model<Comment>,
+		@InjectModel(Menu.name) private menuModel: Model<Menu>,
 		private cloudinaryService: CloudinaryService,
 	) {}
 
@@ -29,6 +31,20 @@ export class DishesService {
 		dishImages: Express.Multer.File[],
 		createDishDto: CreateDishDto,
 	) {
+		// Validate input values
+		if (createDishDto.dishPrice < 0) {
+			throw new BadRequestException('Invalid dish price');
+		}
+
+		if (!Types.ObjectId.isValid(createDishDto.menuId)) {
+			throw new BadRequestException('Invalid menu id');
+		}
+
+		const menu = await this.menuModel.findById(createDishDto.menuId);
+		if (!menu) {
+			throw new NotFoundException('Menu not found');
+		}
+
 		// Check if the dish name existed
 		const isExisted = await this.dishModel.findOne({
 			dishName: createDishDto.dishName,
