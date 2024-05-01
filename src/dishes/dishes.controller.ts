@@ -532,8 +532,8 @@ export class DishesController {
 	async searchDishesByName(
 		@Query('keyword') keyword: string,
 		@Query('sort') sort: string,
-		@Query('minPrice', ParseIntPipe) minPrice: number,
-		@Query('maxPrice', ParseIntPipe) maxPrice: number,
+		@Query('minPrice') minPrice: number,
+		@Query('maxPrice') maxPrice: number,
 		@Query('menuId') menuId: string,
 	) {
 		return await this.dishesService.searchDishesByName(

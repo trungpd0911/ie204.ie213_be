@@ -160,7 +160,7 @@ export class DiscountsController {
 	@UseGuards(AuthGuard)
 	@ApiBearerAuth()
 	// Controller's decorators
-	@Get(':id')
+	@Get('/id/:id')
 	async getDiscountById(@Param('id') id: string) {
 		return await this.discountsService.getDiscountById(id);
 	}
@@ -277,7 +277,7 @@ export class DiscountsController {
 	@UseGuards(AuthGuard)
 	@ApiBearerAuth()
 	// Controller's decorators
-	@Get('/user/:user_id')
+	@Get('/user')
 	async getAllUsersDiscounts(@currentUser() currentUser) {
 		const user = await currentUser;
 		return await this.discountsService.getAllUsersDiscounts(user._id);
