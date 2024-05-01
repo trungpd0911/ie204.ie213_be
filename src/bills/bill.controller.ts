@@ -16,6 +16,7 @@ import { RoleGuard } from '../guards/role.guard';
 import { responseData, responseError } from '../global/globalClass';
 import {
 	CustomApiResponse,
+	CustomBadRequestApiResponse,
 	CustomForbidenrrorApiResponse,
 	CustomNotFoundApiResponse,
 	CustomSuccessfulApiResponse,
@@ -82,6 +83,57 @@ export class BillController {
 	async checkoutBill(@Request() req, @Body('discountId') discountId: string) {
 		const userId = req.currentUser._id;
 		return await this.billService.checkoutBill(userId, discountId);
+	}
+
+	// owner user
+	@ApiBody({
+		schema: {
+			type: 'object',
+			properties: {
+				dishId: {
+					type: 'string',
+					description: 'dishId',
+				},
+				amount: {
+					type: 'number',
+					description: 'amount',
+				},
+				discountId: {
+					type: 'string',
+					description: 'discountId',
+				},
+			},
+		},
+	})
+	@ApiResponse({
+		status: 200,
+		description: 'checkout bill immediately successfully',
+		schema: {
+			example: new responseData(
+				null,
+				200,
+				'checkout bill immediately successfully',
+			),
+		},
+	})
+	@ApiBearerAuth()
+	@CustomNotFoundApiResponse('dish is not exist')
+	@CustomBadRequestApiResponse('amount is not valid')
+	@Post('/checkout/immediately')
+	@UseGuards(AuthGuard)
+	async checkoutBillImmediately(
+		@Request() req,
+		@Body('dishId') dishId: string,
+		@Body('amount') amount: number,
+		@Body('discountId') discountId: string,
+	) {
+		const userId = req.currentUser._id;
+		return await this.billService.checkoutBillImmediately(
+			userId,
+			dishId,
+			amount,
+			discountId,
+		);
 	}
 
 	// admin checkout bill for user when user pay bill by cash
