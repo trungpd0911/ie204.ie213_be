@@ -420,4 +420,66 @@ export class BillService {
 			throw error;
 		}
 	}
+
+	async checkoutBillImmediately(
+		userId: string,
+		dishId: string,
+		amount: number,
+		discountId: string,
+	) {
+		if (!dishId || !mongoose.Types.ObjectId.isValid(dishId)) {
+			return new BadRequestException('dishId is not valid');
+		}
+		if (!amount || amount < 1) {
+			return new BadRequestException('amount is not valid');
+		}
+		try {
+			const dishExist = await this.dishModel.findById(dishId);
+			if (!dishExist) {
+				return new NotFoundException('dish is not exist');
+			}
+			let totalMoney = dishExist.dishPrice * amount;
+			if (discountId) {
+				const discountExist =
+					await this.discountModel.findById(discountId);
+				if (!discountExist) {
+					return new NotFoundException('discount is not exist');
+				}
+				const currentDate = new Date();
+				if (discountExist.endDay < currentDate) {
+					return new UnauthorizedException('discount is expired');
+				}
+				const userUsedDiscount = discountExist.users.find(
+					(user) =>
+						user.userId.toString() == userId && user.used == false,
+				);
+				if (!userUsedDiscount) {
+					return new UnauthorizedException(
+						'discount is not available for this user',
+					);
+				}
+				totalMoney =
+					totalMoney * (1 - discountExist.discountPercent / 100);
+				userUsedDiscount.used = true;
+			}
+			const newBill = await this.billModel.create({
+				user: userId,
+				billDate: Date.now(),
+				totalMoney,
+				billPayed: true,
+				billDishes: [{ dishId, dishAmount: amount }],
+			});
+			await newBill.save();
+			return new responseData(
+				null,
+				200,
+				'checkout bill immediately successfully',
+			);
+		} catch (error) {
+			if (error instanceof InternalServerErrorException) {
+				throw new InternalServerErrorException(error);
+			}
+			throw error;
+		}
+	}
 }
