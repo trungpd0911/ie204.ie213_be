@@ -1,8 +1,12 @@
 import {
+	BadRequestException,
+	ForbiddenException,
 	HttpException,
 	HttpStatus,
 	Injectable,
 	InternalServerErrorException,
+	NotFoundException,
+	UnauthorizedException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import mongoose, { Model } from 'mongoose';
@@ -31,15 +35,17 @@ export class BillService {
 				'get all bills successfully',
 			);
 		} catch (error) {
-			console.log(error);
-			throw new InternalServerErrorException(error);
+			if (error instanceof InternalServerErrorException) {
+				throw new InternalServerErrorException(error);
+			}
+			throw error;
 		}
 	}
 
 	async addDishToCart(userId, dishId) {
 		// check if dishId is type of ObjectId
 		if (!dishId || !mongoose.Types.ObjectId.isValid(dishId)) {
-			return new responseError(400, 'dishId is not valid');
+			return new BadRequestException('dishId is not valid');
 		}
 
 		try {
@@ -73,15 +79,17 @@ export class BillService {
 			await unpaidBill.save();
 			return new responseData(null, 200, 'add dish to cart successfully');
 		} catch (error) {
-			console.log(error);
-			throw new InternalServerErrorException(error);
+			if (error instanceof InternalServerErrorException) {
+				throw new InternalServerErrorException(error);
+			}
+			throw error;
 		}
 	}
 
 	async subtractDishFromCart(userId, dishId) {
 		// check if dishId is type of ObjectId
 		if (!dishId || !mongoose.Types.ObjectId.isValid(dishId)) {
-			return new responseError(400, 'dishId is not valid');
+			return new BadRequestException('dishId is not valid');
 		}
 
 		try {
@@ -90,15 +98,14 @@ export class BillService {
 				billPayed: false,
 			});
 			if (!unpaidBill) {
-				return new responseError(404, 'bill is not exist');
+				return new NotFoundException('bill is not exist');
 			} else {
 				// check if dish is already in the bill
 				const dishExist = unpaidBill.billDishes.find(
 					(dish) => dish.dishId == dishId,
 				);
 				if (!dishExist) {
-					return new responseError(
-						404,
+					return new NotFoundException(
 						'dish is not exist in the bill',
 					);
 				} else {
@@ -122,15 +129,17 @@ export class BillService {
 				'subtract dish from cart successfully',
 			);
 		} catch (error) {
-			console.log(error);
-			throw new InternalServerErrorException(error);
+			if (error instanceof InternalServerErrorException) {
+				throw new InternalServerErrorException(error);
+			}
+			throw error;
 		}
 	}
 
 	async removeDishFromCart(userId, dishId) {
 		// check if dishId is type of ObjectId
 		if (!dishId || !mongoose.Types.ObjectId.isValid(dishId)) {
-			return new responseError(400, 'dishId is not valid');
+			return new BadRequestException('dishId is not valid');
 		}
 
 		try {
@@ -139,15 +148,14 @@ export class BillService {
 				billPayed: false,
 			});
 			if (!unpaidBill) {
-				return new responseError(404, 'bill is not exist');
+				return new NotFoundException('bill is not exist');
 			} else {
 				// check if dish is already in the bill
 				const dishExist = unpaidBill.billDishes.find(
 					(dish) => dish.dishId == dishId,
 				);
 				if (!dishExist) {
-					return new responseError(
-						404,
+					return new NotFoundException(
 						'dish is not exist in the bill',
 					);
 				} else {
@@ -168,8 +176,10 @@ export class BillService {
 				'remove dish from cart successfully',
 			);
 		} catch (error) {
-			console.log(error);
-			throw new InternalServerErrorException(error);
+			if (error instanceof InternalServerErrorException) {
+				throw new InternalServerErrorException(error);
+			}
+			throw error;
 		}
 	}
 
@@ -180,7 +190,7 @@ export class BillService {
 				billPayed: false,
 			});
 			if (!unpaidBill) {
-				return new responseError(404, 'bill is not exist');
+				return new NotFoundException('bill is not exist');
 			} else {
 				unpaidBill.totalMoney = 0;
 				unpaidBill.billDishes = [];
@@ -188,8 +198,10 @@ export class BillService {
 			await unpaidBill.save();
 			return new responseData(null, 200, 'reset cart successfully');
 		} catch (error) {
-			console.log(error);
-			throw new InternalServerErrorException(error);
+			if (error instanceof InternalServerErrorException) {
+				throw new InternalServerErrorException(error);
+			}
+			throw error;
 		}
 	}
 
@@ -199,7 +211,7 @@ export class BillService {
 				.findOne({ user: userId, billPayed: false })
 				.populate('billDishes.dishId');
 			if (!unpaidBill) {
-				return new responseError(404, 'there is no dish in the cart');
+				return new NotFoundException('there is no dish in the cart');
 			}
 			const allDishes = unpaidBill.billDishes;
 			// get all dishes and the count of each dish in the bill from dishModel
@@ -222,8 +234,10 @@ export class BillService {
 				'get all dishes in cart successfully',
 			);
 		} catch (error) {
-			console.log(error);
-			throw new InternalServerErrorException(error);
+			if (error instanceof InternalServerErrorException) {
+				throw new InternalServerErrorException(error);
+			}
+			throw error;
 		}
 	}
 
@@ -234,18 +248,17 @@ export class BillService {
 			!userId ||
 			!mongoose.Types.ObjectId.isValid(userId)
 		) {
-			return new responseError(400, 'billId is not valid');
+			return new BadRequestException('billId is not valid');
 		}
 		try {
 			const paidBill = await this.billModel.findById(billId).findOne({
 				billPayed: true,
 			});
 			if (!paidBill) {
-				return new responseError(404, 'bill is not exist');
+				return new NotFoundException('bill is not exist');
 			}
 			if (paidBill.user.toString() !== userId.toString()) {
-				return new responseError(
-					403,
+				return new ForbiddenException(
 					'you are not allowed to view this bill',
 				);
 			}
@@ -258,7 +271,7 @@ export class BillService {
 						.findById(dish.dishId)
 						.select('dishName dishPrice dishImages');
 					if (!dishDetail) {
-						return new responseError(404, 'dish is not exist');
+						return new NotFoundException('dish is not exist');
 					}
 					return {
 						...dishDetail.toObject(),
@@ -272,14 +285,16 @@ export class BillService {
 				'get all dishes in bill successfully',
 			);
 		} catch (error) {
-			console.log(error);
-			throw new InternalServerErrorException(error);
+			if (error instanceof InternalServerErrorException) {
+				throw new InternalServerErrorException(error);
+			}
+			throw error;
 		}
 	}
 
 	async getAllBillOfUser(userId: string) {
 		if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
-			return new responseError(400, 'userId is not valid');
+			return new BadRequestException('userId is not valid');
 		}
 		try {
 			const allBills = await this.billModel.find({
@@ -292,34 +307,36 @@ export class BillService {
 				'get all bill of user successfully',
 			);
 		} catch (error) {
-			console.log(error);
-			throw new InternalServerErrorException(error);
+			if (error instanceof InternalServerErrorException) {
+				throw new InternalServerErrorException(error);
+			}
+			throw error;
 		}
 	}
 
 	async adminCheckoutBill(billId: string, discountId: string) {
 		if (!billId || !mongoose.Types.ObjectId.isValid(billId)) {
-			return new responseError(400, 'billId is not valid');
+			return new BadRequestException('billId is not valid');
 		}
 		if (discountId && !mongoose.Types.ObjectId.isValid(discountId)) {
-			return new responseError(400, 'discountId is not valid');
+			return new BadRequestException('discountId is not valid');
 		}
 		try {
 			const unpaidBill = await this.billModel.findById(billId).findOne({
 				billPayed: false,
 			});
 			if (!unpaidBill) {
-				return new responseError(404, 'bill is not exist');
+				return new NotFoundException('bill is not exist');
 			}
 			if (discountId) {
 				const discountExist =
 					await this.discountModel.findById(discountId);
 				if (!discountExist) {
-					return new responseError(404, 'discount is not exist');
+					return new NotFoundException('discount is not exist');
 				}
 				const currentDate = new Date();
 				if (discountExist.endDay < currentDate) {
-					return new responseError(403, 'discount is expired');
+					return new UnauthorizedException('discount is expired');
 				}
 				const userUsedDiscount = discountExist.users.find(
 					(user) =>
@@ -327,8 +344,7 @@ export class BillService {
 						user.used == false,
 				);
 				if (!userUsedDiscount) {
-					return new responseError(
-						403,
+					return new UnauthorizedException(
 						'discount is not available for this user',
 					);
 				}
@@ -346,8 +362,10 @@ export class BillService {
 				'admin checkout bill successfully',
 			);
 		} catch (error) {
-			console.log(error);
-			throw new InternalServerErrorException(error);
+			if (error instanceof InternalServerErrorException) {
+				throw new InternalServerErrorException(error);
+			}
+			throw error;
 		}
 	}
 
@@ -358,22 +376,22 @@ export class BillService {
 				billPayed: false,
 			});
 			if (!unpaidBill) {
-				return new responseError(404, 'bill is not exist');
+				return new NotFoundException('bill is not exist');
 			}
 			if (discountId) {
 				// check if discountId is valid
 				if (mongoose.Types.ObjectId.isValid(discountId)) {
-					return new responseError(400, 'discountId is not valid');
+					return new BadRequestException('discountId is not valid');
 				}
 				const discountExist =
 					await this.discountModel.findById(discountId);
 				if (!discountExist) {
-					return new responseError(404, 'discount is not exist');
+					return new NotFoundException('discount is not exist');
 				}
 				// check if discount is expired
 				const currentDate = new Date();
 				if (discountExist.endDay < currentDate) {
-					return new responseError(400, 'discount is expired');
+					return new BadRequestException('discount is expired');
 				}
 				// check if discount is used
 				const userUsedDiscount = discountExist.users.find(
@@ -381,8 +399,7 @@ export class BillService {
 						user.userId.toString() == userId && user.used == false,
 				);
 				if (!userUsedDiscount) {
-					return new responseError(
-						400,
+					return new NotFoundException(
 						'discount is not available for this user',
 					);
 				}
@@ -397,8 +414,10 @@ export class BillService {
 			await unpaidBill.save();
 			return new responseData(null, 200, 'checkout bill successfully');
 		} catch (error) {
-			console.log(error);
-			throw new InternalServerErrorException(error);
+			if (error instanceof InternalServerErrorException) {
+				throw new InternalServerErrorException(error);
+			}
+			throw error;
 		}
 	}
 }
