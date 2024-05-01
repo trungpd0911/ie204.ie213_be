@@ -12,6 +12,7 @@ import {
 	Query,
 	UseGuards,
 	HttpStatus,
+	ParseIntPipe,
 } from '@nestjs/common';
 import { DishesService } from './dishes.service';
 import { CreateDishDto } from './dto/create-dish.dto';
@@ -531,8 +532,8 @@ export class DishesController {
 	async searchDishesByName(
 		@Query('keyword') keyword: string,
 		@Query('sort') sort: string,
-		@Query('minPrice') minPrice: number,
-		@Query('maxPrice') maxPrice: number,
+		@Query('minPrice', ParseIntPipe) minPrice: number,
+		@Query('maxPrice', ParseIntPipe) maxPrice: number,
 		@Query('menuId') menuId: string,
 	) {
 		return await this.dishesService.searchDishesByName(
