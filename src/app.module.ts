@@ -17,6 +17,7 @@ import { TablesModule } from './tables/tables.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import path, { join } from 'path';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
+import { PaymentModule } from './payment/payment.module';
 
 @Module({
 	imports: [
@@ -82,6 +83,7 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
 		CommentsModule,
 		DiscountsModule,
 		TablesModule,
+		PaymentModule,
 	],
 	controllers: [],
 	providers: [],
