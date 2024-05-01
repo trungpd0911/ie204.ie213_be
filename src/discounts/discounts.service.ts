@@ -129,8 +129,10 @@ export class DiscountsService {
 		await Promise.all(
 			users.map(async (user) => {
 				const existedDiscount = user.discounts.find(
-					(discount) => discount['_id'] != foundDiscount._id,
+					(discount) => discount['_id'] == foundDiscount._id,
 				);
+				console.log('Existed discount: ', existedDiscount);
+
 				if (!existedDiscount) {
 					const newDiscountOfUser = {
 						discountId: foundDiscount,
@@ -158,8 +160,7 @@ export class DiscountsService {
 
 		let user = null;
 		try {
-			user = await this.userModel.findById(userId).exec();
-			console.log(user);
+			user = await this.userModel.findById(userId);
 		} catch (e) {
 			throw new InternalServerErrorException(e);
 		}

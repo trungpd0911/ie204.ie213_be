@@ -171,7 +171,7 @@ export class DishesService {
 		// Check request params
 		if (minPrice && maxPrice && minPrice > maxPrice) {
 			throw new BadRequestException(
-				'Invalid params: Min price must be greater than max price',
+				'Invalid params: Min price must be smaller than max price',
 			);
 		}
 
@@ -183,13 +183,13 @@ export class DishesService {
 		const keywordArray = keyword.split(' ');
 		const regexToSearch = '.*' + keywordArray.join('.*') + '.*';
 
-		const DEFAULT_MAX_PRICE = 9999999999;
-		const DAFAULT_MIN_PRICE = 0;
+		const DEFAULT_MAX_PRICE = 9999999;
+		const DEFAULT_MIN_PRICE = 0;
 
 		const filter = {
 			dishPrice: {
 				$lte: maxPrice || DEFAULT_MAX_PRICE,
-				$gte: minPrice || DAFAULT_MIN_PRICE,
+				$gte: minPrice || DEFAULT_MIN_PRICE,
 			},
 			dishName: { $regex: new RegExp(regexToSearch, 'i') },
 		};
@@ -211,18 +211,6 @@ export class DishesService {
 		if (dishes === null || dishes.length === 0) {
 			throw new NotFoundException('No dishes found');
 		}
-
-		// if (keyword == null || keyword == undefined) {
-		// 	throw new BadRequestException('Invalid keyword parameter');
-		// }
-
-		// const keywordArray = keyword.split(' ');
-		// const regexToSearch = '.*' + keywordArray.join('.*') + '.*';
-
-		// // Ignore case sensitive
-		// const dishes = await this.dishModel.find({
-		// 	dishName: { $regex: new RegExp(regexToSearch, 'i') },
-		// });
 
 		if (dishes === null || dishes.length === 0) {
 			throw new NotFoundException('No dishes found');
