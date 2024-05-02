@@ -10,8 +10,8 @@ export class PaymentService {
 	constructor(private configService: ConfigService) {}
 
 	private sortObject(obj: any): any {
-		let sorted = {};
-		let str = [];
+		const sorted = {};
+		const str = [];
 		let key: any;
 		for (key in obj) {
 			if (obj.hasOwnProperty(key)) {
@@ -48,7 +48,7 @@ export class PaymentService {
 		const returnUrl = this.configService.get<string>('vnp_ReturnUrl');
 		const orderId = moment(date).format('DDHHmmss');
 		const bankCode = req.body.bankCode || '';
-		let locale = 'vn';
+		const locale = 'vn';
 		const currCode = 'VND';
 		let vnp_Params = {};
 		vnp_Params['vnp_Version'] = '2.1.0';
