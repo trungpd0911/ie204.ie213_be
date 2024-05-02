@@ -103,12 +103,17 @@ export class tableGateway
 		try {
 			const tableId = data.tableId;
 			const userId = client.data._id;
+			const roleUser = client.data.role;
 			const roomId = '' + userId;
 
 			// console.log('Table canceled ' + tableId);
 			client.join(roomId);
 
-			const res = await this.tableService.cancelTable(tableId, userId);
+			const res = await this.tableService.cancelTable(
+				tableId,
+				userId,
+				roleUser,
+			);
 
 			this.server.to(roomId).emit('CANCEL_TABLE', res.toClient.message, {
 				tableId: res.toClient.tableId,

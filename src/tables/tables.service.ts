@@ -116,7 +116,7 @@ export class TablesService {
 		};
 	}
 
-	async cancelTable(tableId: string, userId: string) {
+	async cancelTable(tableId: string, userId: string, roleUser: string) {
 		if (
 			!Types.ObjectId.isValid(tableId) ||
 			!Types.ObjectId.isValid(userId)
@@ -148,7 +148,7 @@ export class TablesService {
 			};
 		}
 
-		if (table.user.userId.toString() !== userId) {
+		if (table.user.userId.toString() !== userId && roleUser !== 'admin') {
 			return {
 				toClient: {
 					message: "you don't have permission to cancel this table",
