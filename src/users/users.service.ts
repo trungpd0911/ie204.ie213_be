@@ -105,18 +105,12 @@ export class UsersService {
 
 	async changeAvatar(id: string, url: string, public_id: string) {
 		try {
-			console.log(id, url, public_id);
-
 			const user = await this.userModel.findById(id);
 			if (!user) {
 				return new HttpException('User not found', 404);
 			}
-			if (
-				user.avatar.link !=
-				'https://res.cloudinary.com/dsygiu1h0/image/upload/v1711611594/default-avatar.webp'
-			) {
-				console.log(user);
-				await this.cloudinaryService.deleteFile(public_id);
+			if (user.avatar.publicId != '' && user.avatar.publicId != null) {
+				await this.cloudinaryService.deleteFile(user.avatar.publicId);
 			}
 			user.avatar.link = url;
 			user.avatar.publicId = public_id;

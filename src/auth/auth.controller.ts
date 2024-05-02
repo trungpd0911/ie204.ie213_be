@@ -1,4 +1,12 @@
-import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
+import {
+	Body,
+	Controller,
+	Get,
+	HttpCode,
+	Post,
+	Req,
+	UseGuards,
+} from '@nestjs/common';
 import { LoginUserDto } from './dto/loginUser.dto';
 import { AuthService } from './auth.service';
 import { RegisterUserDto } from './dto/registerUser.dto';
@@ -57,6 +65,7 @@ export class AuthController {
 		},
 	})
 	@Post('/login')
+	@HttpCode(200)
 	async login(@Body() loginUser: LoginUserDto) {
 		return this.authService.login(loginUser);
 	}
@@ -91,6 +100,7 @@ export class AuthController {
 			example: new responseError(403, "you don't have permission"),
 		},
 	})
+	@HttpCode(200)
 	@Post('/admin/login')
 	async adminLogin(@Body() loginUser: LoginUserDto) {
 		return this.authService.adminLogin(loginUser);

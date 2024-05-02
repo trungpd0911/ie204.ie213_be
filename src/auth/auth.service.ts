@@ -2,6 +2,7 @@ import {
 	BadRequestException,
 	HttpException,
 	Injectable,
+	InternalServerErrorException,
 	UnauthorizedException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -95,11 +96,10 @@ export class AuthService {
 				'Login successfully',
 			);
 		} catch (error) {
-			if (error instanceof HttpException) {
-				throw error;
+			if (error instanceof InternalServerErrorException) {
+				throw new HttpException('Internal server error', 500);
 			}
-			console.log(error);
-			throw new HttpException('Internal server error', 500);
+			throw error;
 		}
 	}
 
@@ -130,11 +130,10 @@ export class AuthService {
 				'Login successfully',
 			);
 		} catch (error) {
-			if (error instanceof HttpException) {
-				throw error;
+			if (error instanceof InternalServerErrorException) {
+				throw new HttpException('Internal server error', 500);
 			}
-			console.log(error);
-			throw new HttpException('Internal server error', 500);
+			throw error;
 		}
 	}
 }
