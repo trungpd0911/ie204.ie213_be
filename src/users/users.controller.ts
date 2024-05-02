@@ -143,7 +143,7 @@ export class UsersController {
 		},
 	})
 	@Get(':id')
-	@UseGuards(new RoleGuard(['admin']))
+	// @UseGuards(new RoleGuard(['admin', 'user']))
 	@UseGuards(AuthGuard)
 	async getUserById(@Param('id') id: string) {
 		return await this.userService.getUserById(id);
