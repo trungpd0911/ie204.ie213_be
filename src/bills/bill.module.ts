@@ -26,5 +26,6 @@ import { Discount, DiscountSchema } from '../schemas/Discount.schema';
 	],
 	controllers: [BillController],
 	providers: [BillService],
+	exports: [BillService],
 })
 export class BillModule {}

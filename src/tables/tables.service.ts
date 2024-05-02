@@ -27,12 +27,21 @@ export class TablesService {
 	async getAllTables() {
 		try {
 			// take username from user collection
-			const allTables = await this.tableModel
-				.find()
-				.populate('user', 'username')
-				.exec();
+			const allTables = await this.tableModel.find().exec();
+			const tablesWithUsernames = await Promise.all(
+				allTables.map(async (table) => {
+					if (table.user) {
+						const user = await this.usersService.findUserById(
+							table.user.userId.toString(),
+						);
+						table.user.username = user.username;
+					}
+					return table;
+				}),
+			);
+
 			return new responseData(
-				allTables,
+				tablesWithUsernames,
 				200,
 				'Get all tables successfully',
 			);

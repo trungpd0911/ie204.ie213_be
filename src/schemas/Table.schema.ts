@@ -16,11 +16,13 @@ export class Table {
 		required: false,
 		type: {
 			userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+			username: String,
 			bookingTime: Date,
 		},
 	})
 	user: {
 		userId: { type: mongoose.Schema.Types.ObjectId; ref: 'User' };
+		username: string;
 		bookingTime: Date;
 	};
 }
