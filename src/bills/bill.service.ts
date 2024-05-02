@@ -356,6 +356,16 @@ export class BillService {
 			// if don't have discount
 			unpaidBill.billPayed = true;
 			await unpaidBill.save();
+			// plus dishAmount to totalOrder of dishModel
+			await Promise.all(
+				unpaidBill.billDishes.map(async (dish) => {
+					const dishDetail = await this.dishModel.findById(
+						dish.dishId,
+					);
+					dishDetail.totalOrder += dish.dishAmount;
+					await dishDetail.save();
+				}),
+			);
 			return new responseData(
 				null,
 				200,
@@ -412,6 +422,16 @@ export class BillService {
 			// if don't have discount
 			unpaidBill.billPayed = true;
 			await unpaidBill.save();
+			// plus dishAmount to totalOrder of dishModel
+			await Promise.all(
+				unpaidBill.billDishes.map(async (dish) => {
+					const dishDetail = await this.dishModel.findById(
+						dish.dishId,
+					);
+					dishDetail.totalOrder += dish.dishAmount;
+					await dishDetail.save();
+				}),
+			);
 			return new responseData(null, 200, 'checkout bill successfully');
 		} catch (error) {
 			if (error instanceof InternalServerErrorException) {
@@ -470,6 +490,9 @@ export class BillService {
 				billDishes: [{ dishId, dishAmount: amount }],
 			});
 			await newBill.save();
+			// plus dishAmount to totalOrder of dishModel
+			dishExist.totalOrder += amount;
+			await dishExist.save();
 			return new responseData(
 				null,
 				200,
