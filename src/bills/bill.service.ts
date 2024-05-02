@@ -45,7 +45,7 @@ export class BillService {
 	async addDishToCart(userId, dishId) {
 		// check if dishId is type of ObjectId
 		if (!dishId || !mongoose.Types.ObjectId.isValid(dishId)) {
-			return new BadRequestException('dishId is not valid');
+			throw new BadRequestException('dishId is not valid');
 		}
 
 		try {
@@ -89,7 +89,7 @@ export class BillService {
 	async subtractDishFromCart(userId, dishId) {
 		// check if dishId is type of ObjectId
 		if (!dishId || !mongoose.Types.ObjectId.isValid(dishId)) {
-			return new BadRequestException('dishId is not valid');
+			throw new BadRequestException('dishId is not valid');
 		}
 
 		try {
@@ -98,14 +98,14 @@ export class BillService {
 				billPayed: false,
 			});
 			if (!unpaidBill) {
-				return new NotFoundException('bill is not exist');
+				throw new NotFoundException('bill is not exist');
 			} else {
 				// check if dish is already in the bill
 				const dishExist = unpaidBill.billDishes.find(
 					(dish) => dish.dishId == dishId,
 				);
 				if (!dishExist) {
-					return new NotFoundException(
+					throw new NotFoundException(
 						'dish is not exist in the bill',
 					);
 				} else {
@@ -139,7 +139,7 @@ export class BillService {
 	async removeDishFromCart(userId, dishId) {
 		// check if dishId is type of ObjectId
 		if (!dishId || !mongoose.Types.ObjectId.isValid(dishId)) {
-			return new BadRequestException('dishId is not valid');
+			throw new BadRequestException('dishId is not valid');
 		}
 
 		try {
@@ -148,14 +148,14 @@ export class BillService {
 				billPayed: false,
 			});
 			if (!unpaidBill) {
-				return new NotFoundException('bill is not exist');
+				throw new NotFoundException('bill is not exist');
 			} else {
 				// check if dish is already in the bill
 				const dishExist = unpaidBill.billDishes.find(
 					(dish) => dish.dishId == dishId,
 				);
 				if (!dishExist) {
-					return new NotFoundException(
+					throw new NotFoundException(
 						'dish is not exist in the bill',
 					);
 				} else {
@@ -190,7 +190,7 @@ export class BillService {
 				billPayed: false,
 			});
 			if (!unpaidBill) {
-				return new NotFoundException('bill is not exist');
+				throw new NotFoundException('bill is not exist');
 			} else {
 				unpaidBill.totalMoney = 0;
 				unpaidBill.billDishes = [];
@@ -211,7 +211,7 @@ export class BillService {
 				.findOne({ user: userId, billPayed: false })
 				.populate('billDishes.dishId');
 			if (!unpaidBill) {
-				return new NotFoundException('there is no dish in the cart');
+				return new responseData(null, 200, 'cart is empty');
 			}
 			const allDishes = unpaidBill.billDishes;
 			// get all dishes and the count of each dish in the bill from dishModel
@@ -248,17 +248,17 @@ export class BillService {
 			!userId ||
 			!mongoose.Types.ObjectId.isValid(userId)
 		) {
-			return new BadRequestException('billId is not valid');
+			throw new BadRequestException('billId is not valid');
 		}
 		try {
 			const paidBill = await this.billModel.findById(billId).findOne({
 				billPayed: true,
 			});
 			if (!paidBill) {
-				return new NotFoundException('bill is not exist');
+				throw new NotFoundException('bill is not exist');
 			}
 			if (paidBill.user.toString() !== userId.toString()) {
-				return new ForbiddenException(
+				throw new ForbiddenException(
 					'you are not allowed to view this bill',
 				);
 			}
@@ -271,7 +271,7 @@ export class BillService {
 						.findById(dish.dishId)
 						.select('dishName dishPrice dishImages');
 					if (!dishDetail) {
-						return new NotFoundException('dish is not exist');
+						throw new NotFoundException('dish is not exist');
 					}
 					return {
 						...dishDetail.toObject(),
@@ -294,7 +294,7 @@ export class BillService {
 
 	async getAllBillOfUser(userId: string) {
 		if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
-			return new BadRequestException('userId is not valid');
+			throw new BadRequestException('userId is not valid');
 		}
 		try {
 			const allBills = await this.billModel.find({
@@ -316,27 +316,27 @@ export class BillService {
 
 	async adminCheckoutBill(billId: string, discountId: string) {
 		if (!billId || !mongoose.Types.ObjectId.isValid(billId)) {
-			return new BadRequestException('billId is not valid');
+			throw new BadRequestException('billId is not valid');
 		}
 		if (discountId && !mongoose.Types.ObjectId.isValid(discountId)) {
-			return new BadRequestException('discountId is not valid');
+			throw new BadRequestException('discountId is not valid');
 		}
 		try {
 			const unpaidBill = await this.billModel.findById(billId).findOne({
 				billPayed: false,
 			});
 			if (!unpaidBill) {
-				return new NotFoundException('bill is not exist');
+				throw new NotFoundException('bill is not exist');
 			}
 			if (discountId) {
 				const discountExist =
 					await this.discountModel.findById(discountId);
 				if (!discountExist) {
-					return new NotFoundException('discount is not exist');
+					throw new NotFoundException('discount is not exist');
 				}
 				const currentDate = new Date();
 				if (discountExist.endDay < currentDate) {
-					return new UnauthorizedException('discount is expired');
+					throw new UnauthorizedException('discount is expired');
 				}
 				const userUsedDiscount = discountExist.users.find(
 					(user) =>
@@ -344,7 +344,7 @@ export class BillService {
 						user.used == false,
 				);
 				if (!userUsedDiscount) {
-					return new UnauthorizedException(
+					throw new UnauthorizedException(
 						'discount is not available for this user',
 					);
 				}
@@ -376,22 +376,22 @@ export class BillService {
 				billPayed: false,
 			});
 			if (!unpaidBill) {
-				return new NotFoundException('bill is not exist');
+				throw new NotFoundException('bill is not exist');
 			}
 			if (discountId) {
 				// check if discountId is valid
 				if (mongoose.Types.ObjectId.isValid(discountId)) {
-					return new BadRequestException('discountId is not valid');
+					throw new BadRequestException('discountId is not valid');
 				}
 				const discountExist =
 					await this.discountModel.findById(discountId);
 				if (!discountExist) {
-					return new NotFoundException('discount is not exist');
+					throw new NotFoundException('discount is not exist');
 				}
 				// check if discount is expired
 				const currentDate = new Date();
 				if (discountExist.endDay < currentDate) {
-					return new BadRequestException('discount is expired');
+					throw new BadRequestException('discount is expired');
 				}
 				// check if discount is used
 				const userUsedDiscount = discountExist.users.find(
@@ -399,7 +399,7 @@ export class BillService {
 						user.userId.toString() == userId && user.used == false,
 				);
 				if (!userUsedDiscount) {
-					return new NotFoundException(
+					throw new NotFoundException(
 						'discount is not available for this user',
 					);
 				}
@@ -428,33 +428,33 @@ export class BillService {
 		discountId: string,
 	) {
 		if (!dishId || !mongoose.Types.ObjectId.isValid(dishId)) {
-			return new BadRequestException('dishId is not valid');
+			throw new BadRequestException('dishId is not valid');
 		}
 		if (!amount || amount < 1) {
-			return new BadRequestException('amount is not valid');
+			throw new BadRequestException('amount is not valid');
 		}
 		try {
 			const dishExist = await this.dishModel.findById(dishId);
 			if (!dishExist) {
-				return new NotFoundException('dish is not exist');
+				throw new NotFoundException('dish is not exist');
 			}
 			let totalMoney = dishExist.dishPrice * amount;
 			if (discountId) {
 				const discountExist =
 					await this.discountModel.findById(discountId);
 				if (!discountExist) {
-					return new NotFoundException('discount is not exist');
+					throw new NotFoundException('discount is not exist');
 				}
 				const currentDate = new Date();
 				if (discountExist.endDay < currentDate) {
-					return new UnauthorizedException('discount is expired');
+					throw new UnauthorizedException('discount is expired');
 				}
 				const userUsedDiscount = discountExist.users.find(
 					(user) =>
 						user.userId.toString() == userId && user.used == false,
 				);
 				if (!userUsedDiscount) {
-					return new UnauthorizedException(
+					throw new UnauthorizedException(
 						'discount is not available for this user',
 					);
 				}
