@@ -187,7 +187,6 @@ export class BillController {
 			),
 		},
 	})
-	@CustomNotFoundApiResponse('there is no dish in the cart')
 	@Get('/cart')
 	@UseGuards(AuthGuard)
 	async getDishesInCArt(@Request() req) {

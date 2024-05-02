@@ -211,7 +211,7 @@ export class BillService {
 				.findOne({ user: userId, billPayed: false })
 				.populate('billDishes.dishId');
 			if (!unpaidBill) {
-				return new responseData(null, 200, 'cart is empty');
+				return new responseData([], 200, 'cart is empty');
 			}
 			const allDishes = unpaidBill.billDishes;
 			// get all dishes and the count of each dish in the bill from dishModel
