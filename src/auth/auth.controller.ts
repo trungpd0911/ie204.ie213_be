@@ -12,6 +12,7 @@ import { AuthService } from './auth.service';
 import { RegisterUserDto } from './dto/registerUser.dto';
 import { ApiResponse, ApiTags } from '@nestjs/swagger';
 import { responseData, responseError } from '../global/globalClass';
+import { RefreshRequest } from './dto/refreshRequest.dto';
 
 @ApiTags('auth')
 @Controller('auth')
@@ -104,5 +105,29 @@ export class AuthController {
 	@Post('/admin/login')
 	async adminLogin(@Body() loginUser: LoginUserDto) {
 		return this.authService.adminLogin(loginUser);
+	}
+
+	@ApiResponse({
+		status: 200,
+		description: 'Refresh access token successfully',
+		schema: {
+			example: new responseData(
+				'New access token',
+				200,
+				'Refresh access token successfully',
+			),
+		},
+	})
+	@ApiResponse({
+		status: 400,
+		description: 'wrong email or password',
+		schema: {
+			example: new responseError(400, 'wrong email or password'),
+		},
+	})
+	@Post('/refresh')
+	@HttpCode(200)
+	async refreshAccessToken(@Body() refreshRequest: RefreshRequest) {
+		return this.authService.refresh(refreshRequest);
 	}
 }

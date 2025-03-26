@@ -1,6 +1,8 @@
 import {
 	BadRequestException,
+	forwardRef,
 	HttpException,
+	Inject,
 	Injectable,
 	InternalServerErrorException,
 	UnauthorizedException,
@@ -13,12 +15,17 @@ import { RegisterUserDto } from './dto/registerUser.dto';
 import * as bcrypt from 'bcrypt';
 import { responseData, responseError } from '../global/globalClass';
 import { JwtService } from '@nestjs/jwt';
+import { RefreshRequest } from './dto/refreshRequest.dto';
+import { UsersService } from 'src/users/users.service';
 
 @Injectable()
 export class AuthService {
 	constructor(
 		@InjectModel(User.name) private userModel: Model<User>,
 		private jwtService: JwtService,
+
+		@Inject(forwardRef(() => UsersService))
+		private userService: UsersService,
 	) {}
 
 	async hashPassword(password: string): Promise<string> {
@@ -41,9 +48,36 @@ export class AuthService {
 	private async generateRefreshToken(payload: any): Promise<string> {
 		const refreshToken = await this.jwtService.signAsync(payload, {
 			secret: process.env.JWT_REFRESH_TOKEN_SECRET,
-			expiresIn: '7d',
+			expiresIn: process.env.JWT_REFRESH_TOKEN_EXPIRES_IN,
 		});
 		return refreshToken;
+	}
+
+	async refresh(refreshRequest: RefreshRequest) {
+		try {
+			const refreshToken = refreshRequest.refreshToken;
+
+			const payload = await this.jwtService.verifyAsync(refreshToken, {
+				secret: process.env.JWT_REFRESH_TOKEN_SECRET,
+			});
+
+			const userId = payload.userId;
+			const foundUser = await this.userService.findUserById(userId);
+			if (!foundUser) {
+				throw new UnauthorizedException('User not found');
+			}
+
+			const { password, ...user } = foundUser.toObject();
+			const accessToken = await this.generateAccessToken(user);
+
+			return new responseData(
+				accessToken,
+				200,
+				'Refresh access token successfully',
+			);
+		} catch (e) {
+			throw new InternalServerErrorException(e);
+		}
 	}
 
 	async register(registerUser: RegisterUserDto) {
@@ -67,7 +101,6 @@ export class AuthService {
 			if (error instanceof HttpException) {
 				throw error;
 			}
-			console.log(error);
 			throw new HttpException('Internal server error', 500);
 		}
 	}
@@ -87,9 +120,17 @@ export class AuthService {
 			if (!checkPassword) {
 				throw new BadRequestException('wrong email or password');
 			}
+
 			const { password, ...user } = checkUser.toObject();
 			const accessToken = await this.generateAccessToken(user);
-			const refreshToken = await this.generateRefreshToken(user);
+
+			const refreshTokenPayload = {
+				userId: checkUser.id,
+				userRole: checkUser.role,
+			};
+			const refreshToken =
+				await this.generateRefreshToken(refreshTokenPayload);
+
 			return new responseData(
 				{ accessToken, refreshToken },
 				200,
