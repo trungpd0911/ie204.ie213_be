@@ -98,4 +98,51 @@ export class CloudinaryController {
 		});
 		return new responseData(images, 200, 'upload blog images successfully');
 	}
+
+	@tokenErrorResponse
+	@permissionErrorResponse
+	@ApiResponse({
+		status: 200,
+		description: 'Delete images successfully',
+		schema: {
+			example: new responseData(null, 200, 'Delete image successfully'),
+		},
+	})
+	@ApiResponse({
+		status: 400,
+		description: 'Invalid file type',
+		schema: { example: new responseError(400, 'Invalid file type') },
+	})
+	@ApiConsumes('multipart/form-data')
+	@ApiBody({
+		schema: {
+			type: 'object',
+			properties: {
+				blogImages: {
+					type: 'array',
+					items: {
+						type: 'string',
+						format: 'binary',
+					},
+				},
+			},
+		},
+	})
+	@ApiBearerAuth()
+	@Post('/delete-image')
+	@UseGuards(new RoleGuard(['admin']))
+	@UseGuards(AuthGuard)
+	async deleteImage(imagePublicIds: string[]) {
+		if (imagePublicIds?.length > 0) {
+			for (let image of imagePublicIds) {
+				this.cloudinaryService.deleteFile(image);
+
+				return new responseData(
+					null,
+					200,
+					'Delete images successfully',
+				);
+			}
+		}
+	}
 }

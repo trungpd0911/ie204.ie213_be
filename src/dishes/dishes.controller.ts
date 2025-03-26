@@ -121,6 +121,46 @@ export class DishesController {
 
 	// Swagger's decorators
 	@ApiOperation({ summary: '[NO AUTH] Update a dish by ID' })
+	@ApiConsumes('multipart/form-data')
+	@ApiBody({
+		schema: {
+			type: 'object',
+			properties: {
+				dishName: {
+					type: 'string',
+					example: 'Trà sữa trân châu đường đen nhiều đường đen',
+					nullable: true,
+				},
+				dishPrice: { type: 'number', example: 20000, nullable: true },
+				dishDescription: {
+					type: 'string',
+					example: 'Khong co gi ngon',
+					nullable: true,
+				},
+				menuId: {
+					type: 'string',
+					example: '66083097c11b247adbd84f2a',
+					nullable: true,
+				},
+				oldImageIds: {
+					type: 'array',
+					items: {
+						type: 'string',
+					},
+					example: ['image1', 'image2', 'image3'],
+					nullable: true,
+				},
+				newImages: {
+					type: 'array',
+					items: {
+						type: 'string',
+						format: 'binary',
+					},
+					nullable: true,
+				},
+			},
+		},
+	})
 	@ApiParam({
 		name: 'id',
 		required: true,
@@ -167,11 +207,17 @@ export class DishesController {
 	@ApiBearerAuth()
 	// Controller's decorators
 	@Put('/:id')
+	@UseInterceptors(FilesInterceptor('newImages'))
 	async updateDishById(
 		@Param('id') id: string,
 		@Body() updateDishDto: UpdateDishDto,
+		@UploadedFiles() newImages: Express.Multer.File[],
 	) {
-		return await this.dishesService.updateDishById(id, updateDishDto);
+		return await this.dishesService.updateDishById(
+			id,
+			UpdateDishDto.from(updateDishDto),
+			newImages,
+		);
 	}
 
 	// Swagger's decorators
