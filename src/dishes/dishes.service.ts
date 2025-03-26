@@ -155,7 +155,7 @@ export class DishesService {
 			const oldImagePublicIds = [].concat(updateDishDto.oldImageIds);
 
 			if (oldImagePublicIds?.length > 0) {
-				for (let publicId of oldImagePublicIds) {
+				for (const publicId of oldImagePublicIds) {
 					if (
 						dish.dishImages.find((image) => image.id === publicId)
 					) {

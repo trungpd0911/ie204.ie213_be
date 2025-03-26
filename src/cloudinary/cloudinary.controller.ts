@@ -134,7 +134,7 @@ export class CloudinaryController {
 	@UseGuards(AuthGuard)
 	async deleteImage(imagePublicIds: string[]) {
 		if (imagePublicIds?.length > 0) {
-			for (let image of imagePublicIds) {
+			for (const image of imagePublicIds) {
 				this.cloudinaryService.deleteFile(image);
 
 				return new responseData(
