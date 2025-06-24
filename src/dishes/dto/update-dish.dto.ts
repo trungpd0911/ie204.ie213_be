@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { IsArray } from 'class-validator';
 
 export default class UpdateDishDto {
 	@ApiProperty({
@@ -18,19 +19,24 @@ export default class UpdateDishDto {
 
 	@ApiProperty({
 		example: [
-			{
-				link: 'http://res.cloudinary.com/ddexbqgmg/image/upload/v1712315515/bepUIT-dishImages/lmskq9koz19kmvcz2uyt.jpg',
-				id: 'bepUIT-dishImages/lmskq9koz19kmvcz2uyt',
-			},
-			{
-				link: 'http://res.cloudinary.com/ddexbqgmg/image/upload/v1712315515/bepUIT-dishImages/iwuxrcc5wtgzjkasl7v3.jpg',
-				id: 'bepUIT-dishImages/iwuxrcc5wtgzjkasl7v3',
-			},
+			'bepUIT-dishImages/lmskq9koz19kmvcz2uyt',
+			'bepUIT-dishImages/iwuxrcc5wtgzjkasl7v3',
 		],
 		required: false,
+		type: [String],
 	})
-	dishImages: {
-		link: string;
-		id: string;
-	}[];
+	oldImageIds?: string | string[];
+
+	// Used when clients pass less than 2 ids
+	static from(dto: Partial<UpdateDishDto>) {
+		const updateDto = new UpdateDishDto();
+		Object.assign(updateDto, dto);
+
+		// Transform oldImageIds if it's a string
+		if (typeof updateDto.oldImageIds === 'string') {
+			updateDto.oldImageIds = updateDto.oldImageIds.split(',');
+		}
+
+		return updateDto;
+	}
 }

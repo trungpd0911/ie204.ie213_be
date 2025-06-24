@@ -73,7 +73,7 @@ Now the API is available with host: `http:/localhost:3000`
 
 ## Documentation
 
--   Swagger UI is available at: `http://localhost:3000/api/#/`
+-   Swagger UI is available at: `http://localhost:8080/api/#/`
 
 ## Deployment
 

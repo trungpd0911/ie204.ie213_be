@@ -17,6 +17,7 @@ import { configSlug } from '../helper/slug.helper';
 import { CloudinaryService } from 'src/cloudinary/cloudinary.service';
 import { Comment } from 'src/schemas/Comment.schema';
 import { Menu } from 'src/schemas/Menu.schema';
+import { log } from 'console';
 
 @Injectable()
 export class DishesService {
@@ -116,7 +117,11 @@ export class DishesService {
 		return new responseData(dish, 200, 'Get dish by id successfully');
 	}
 
-	async updateDishById(id: string, updateDishDto: UpdateDishDto) {
+	async updateDishById(
+		id: string,
+		updateDishDto: UpdateDishDto,
+		newImages: Express.Multer.File[],
+	) {
 		if (!Types.ObjectId.isValid(id)) {
 			throw new BadRequestException('Invalid id');
 		}
@@ -127,15 +132,52 @@ export class DishesService {
 		}
 
 		try {
-			const updatedDish = await this.dishModel.findByIdAndUpdate(
-				id,
-				updateDishDto,
-				{
-					new: true,
-				},
-			);
+			if (newImages) {
+				// Create dish images in cloudinary
+				let savedImages: CloudinaryResponse[] = [];
+				if (newImages?.length > 0) {
+					savedImages =
+						await this.cloudinaryService.uploadDishImages(
+							newImages,
+						);
+				}
+
+				// Get image dish files array
+				const imageFileUrls = savedImages.map((image) => ({
+					link: image.url,
+					id: image.public_id,
+				}));
+
+				dish.dishImages = [...dish.dishImages, ...imageFileUrls];
+			}
+
+			// Remove old images
+			const oldImagePublicIds = [].concat(updateDishDto.oldImageIds);
+
+			if (oldImagePublicIds?.length > 0) {
+				for (const publicId of oldImagePublicIds) {
+					if (
+						dish.dishImages.find((image) => image.id === publicId)
+					) {
+						// No need to await here
+						const result =
+							this.cloudinaryService.deleteFile(publicId);
+
+						console.log(result);
+
+						dish.dishImages = dish.dishImages.filter(
+							(image) => image.id != publicId,
+						);
+					} else {
+						console.log('Public ID not found: ', publicId);
+					}
+				}
+			}
+
+			dish.save();
+
 			return new responseData(
-				updatedDish,
+				dish,
 				HttpStatus.OK,
 				'Dish is updated successfully',
 			);
