@@ -1,6 +1,8 @@
 import {
 	BadRequestException,
+	forwardRef,
 	HttpException,
+	Inject,
 	Injectable,
 	InternalServerErrorException,
 	NotFoundException,
@@ -22,7 +24,10 @@ export class UsersService {
 	constructor(
 		@InjectModel(User.name) private userModel: Model<User>,
 		private cloudinaryService: CloudinaryService,
+
+		@Inject(forwardRef(() => AuthService))
 		private authService: AuthService,
+
 		private mailerService: MailerService,
 	) {}
 
