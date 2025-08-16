@@ -3,38 +3,43 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import * as cookieParser from 'cookie-parser';
 
 async function bootstrap() {
-	const app = await NestFactory.create(AppModule);
-	// validation pipe for all routes
-	app.useGlobalPipes(new ValidationPipe());
+  const app = await NestFactory.create(AppModule);
+  // validation pipe for all routes
+  app.useGlobalPipes(new ValidationPipe());
+  app.use(cookieParser());
 
-	// swagger setup
-	const config = new DocumentBuilder()
-		.setTitle('Swagger bếp UIT')
-		.setDescription('API documentation for bếp UIT')
-		.setVersion('1.0')
-		.addTag('auth')
-		.addTag('users')
-		.addTag('posts')
-		.addBearerAuth()
-		.build();
-	const document = SwaggerModule.createDocument(app, config);
-	SwaggerModule.setup('api', app, document);
+  // swagger setup
+  const config = new DocumentBuilder()
+    .setTitle('Swagger bếp UIT')
+    .setDescription('API documentation for bếp UIT')
+    .setVersion('1.0')
+    .addTag('auth')
+    .addTag('users')
+    .addTag('posts')
+    .addBearerAuth()
+    .build();
+  const document = SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api', app, document);
 
-	// Hide all dtos in swagger ui
-	// SwaggerModule.setup('swagger', app, document, {
-	// 	swaggerOptions: { defaultModelsExpandDepth: -1 },
-	// });
+  // Hide all dtos in swagger ui
+  // SwaggerModule.setup('swagger', app, document, {
+  // 	swaggerOptions: { defaultModelsExpandDepth: -1 },
+  // });
 
-	// cors
-	app.enableCors();
-	// start server
-	await app.listen(process.env.port || 3000);
-	// Hot Module Replacement => reload automatically when change code
-	if (module.hot) {
-		module.hot.accept();
-		module.hot.dispose(() => app.close());
-	}
+  // cors
+  app.enableCors({
+    origin: ['http://localhost:3000', 'http://localhost:5173', 'https://bepuit.vercel.app'],
+    credentials: true,
+  });
+  // start server
+  await app.listen(process.env.port || 3000);
+  // Hot Module Replacement => reload automatically when change code
+  if (module.hot) {
+    module.hot.accept();
+    module.hot.dispose(() => app.close());
+  }
 }
 bootstrap();
