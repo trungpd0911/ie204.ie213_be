@@ -18,7 +18,7 @@
 		"test:watch": "jest --watch",
 		"test:cov": "jest --coverage",
 		"test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
-		"prepare": "husky install"
+		"prepare": "node -e \"if(process.env.NODE_ENV !== 'production') process.exit(1)\" || husky install"
 	},
 	"dependencies": {
 		"@nestjs-modules/mailer": "^2.0.0",
